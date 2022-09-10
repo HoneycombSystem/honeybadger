@@ -7,14 +7,14 @@ set(CURRENT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT
 message(STATUS "version: ${CURRENT_VERSION}")
 option(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-option(BUILD_SHARED_LIBS ON)
 
-if (CMAKE_BUILD_TYPE MATCHES "Release")
+if(NOT CMAKE_BUILD_TYPE)
+    message(FATAL_ERROR "Available build types: Debug or Release.")
+elseif (CMAKE_BUILD_TYPE MATCHES "Release")
     set(CMAKE_BUILD_TYPE Release)
+# todo: elseif (CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
 elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
     set(CMAKE_DEBUG_POSTFIX "-debug")
-else ()
-    message(FATAL_ERROR "Available build types: Debug or Release.")
 endif ()
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
@@ -23,7 +23,7 @@ include(use_clang_tidy)
 include(use_sanitizer)
 include(enable_tests)
 
-#include(enable_docs)
+include(enable_docs)
 #include(enable_benchmarks)
 #include(enable_examples)
 

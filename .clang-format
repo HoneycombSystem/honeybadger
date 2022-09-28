@@ -79,5 +79,3 @@ ShortNamespaceLines: 0
 # QualifierOrder: ['inline', 'static', 'type', 'const', 'volatile' ]
 # SeparateDefinitionBlocks: Always
 # InsertBraces: 'true'
-
-...

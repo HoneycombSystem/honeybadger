@@ -1,7 +1,7 @@
 if [ -n "$(git status --porcelain)" ]; then
-  echo "there are changes";
+  echo "Correct the formatting in the files above";
   exit 1;
 else
-  echo "no changes";
+  echo "Formatting correct";
   exit 0;
 fi

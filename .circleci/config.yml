@@ -12,6 +12,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Formatting check"
+          command: |
+            ./scripts/format.sh packages
+            ./scripts/check_check_formatted.sh
+      - run:
           name: "Configure"
           command: |
             cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=Debug

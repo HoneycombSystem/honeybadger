@@ -89,34 +89,34 @@ jobs:
           paths:
             - build
 
-  deploy_docs:
-    docker:
-      - image: alpine:latest
-    working_directory: ~/honeybadger_ci
-    steps:
-      - attach_workspace:
-          at: ~/honeybadger_ci
-      - run:
-          name: Install and configure git
-          command: |
-            apk add git
-            git clone -b gh-pages https://github.com/MateuszMiekicki/honeybadger.git
-            cd honeybadger
-            git config user.email ""
-            git config user.name "ci-build"
-      - run:
-          name: Delete old docs and move new
-          command: |
-            cd honeybadger
-            rm -irf html
-            mv ../build/docs/html .
-      - run:
-          name: Deploy docs
-          command: |
-            cd honeybadger
-            git add -fA
-            git commit --allow-empty -m "auto commit [ci skip]<< pipeline.number >>"
-            git push https://$GITHUB_DEPLOY_TOKEN@github.com/MateuszMiekicki/honeybadger.git -f
+  # deploy_docs:
+  #   docker:
+  #     - image: alpine:latest
+  #   working_directory: ~/honeybadger_ci
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/honeybadger_ci
+  #     - run:
+  #         name: Install and configure git
+  #         command: |
+  #           apk add git
+  #           git clone -b gh-pages https://github.com/MateuszMiekicki/honeybadger.git
+  #           cd honeybadger
+  #           git config user.email ""
+  #           git config user.name "ci-build"
+  #     - run:
+  #         name: Delete old docs and move new
+  #         command: |
+  #           cd honeybadger
+  #           rm -irf html
+  #           mv ../build/docs/html .
+  #     - run:
+  #         name: Deploy docs
+  #         command: |
+  #           cd honeybadger
+  #           git add -fA
+  #           git commit --allow-empty -m "auto commit [ci skip]<< pipeline.number >>"
+  #           git push https://$GITHUB_DEPLOY_TOKEN@github.com/MateuszMiekicki/honeybadger.git -f
 
   delivery:
     parameters:
@@ -194,10 +194,10 @@ workflows:
                 - master
           requires:
             - test
-      - deploy_docs:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - test
+      # - deploy_docs:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - test

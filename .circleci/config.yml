@@ -14,8 +14,8 @@ jobs:
       - run:
           name: "Formatting check"
           command: |
-            ./scripts/format.sh packages
-            ./scripts/check_check_formatted.sh
+            bash ./scripts/format.sh packages
+            bash ./scripts/check_check_formatted.sh
       - run:
           name: "Configure"
           command: |

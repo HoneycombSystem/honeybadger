@@ -2,7 +2,7 @@
 
 ```plantuml
 @startuml
-component "Payments" as alias <<component>> {
+component "payments" as alias <<component>> {
    namespace honeybadger::documents::payments {
         class FiscalReceipt {
             # id: DocumentId
@@ -40,44 +40,6 @@ component "Payments" as alias <<component>> {
         SimplifiedVatInvoice <|-- SimplifiedVatInvoiceCorrection
         SimplifiedVatInvoice <|-- FullVatInvoice
         FullVatInvoice <|-- FullVatInvoiceCorrection
-    }
-    namespace honeybadger::documents::types {
-        class Note {
-
-        }
-
-        object DocumentId<<Alias>> {
-            String
-        }
-        object DateOfIssue<<Alias>> {
-            Pair<Date,Time>
-        }
-
-        class Taxpayer {
-            # fullName: String
-            # address: Address
-            # taxpayerIdentificationNumber: TaxpayerIdentificationNumber
-        }
-        enum TaxpayerType {
-            business
-            government
-            consumer
-        }
-        class TaxpayerIdentificationNumber {
-
-        }
-        class Payment {
-            # paymentDocumentType: PaymentDocumentType
-            # currency: Currency
-            # paymentType: PaymentType
-        }
-
-        
-        class Item {
-
-        }
-        Taxpayer *-- TaxpayerType
-        Taxpayer *-- TaxpayerIdentificationNumber
     }
 }
 @enduml

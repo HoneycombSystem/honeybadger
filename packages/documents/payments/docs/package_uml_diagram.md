@@ -19,16 +19,18 @@ component "Payments" as alias <<component>> {
         }
 
         class SimplifiedVatInvoice {
-        }
-        class SimplifiedVatInvoiceCorrection {
-        }
-        class FullVatInvoice {
+            # dateOfIssue: DateOfIssue
             # invoiceId: DocumentId
             # seller: Taxpayer
             # buyer: Taxpayer
-            # dateOfIssue: DateOfIssue
-            # payment: Payment
             # items: Array<Item>
+            # note: Note
+        }
+        class SimplifiedVatInvoiceCorrection {
+            
+        }
+        class FullVatInvoice {
+            # payment: Payment
             # isReverseCharge: bool
             # isSelfBilling: bool
         }
@@ -40,6 +42,10 @@ component "Payments" as alias <<component>> {
         FullVatInvoice <|-- FullVatInvoiceCorrection
     }
     namespace honeybadger::documents::types {
+        class Note {
+
+        }
+
         object DocumentId<<Alias>> {
             String
         }

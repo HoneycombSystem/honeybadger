@@ -1,6 +1,7 @@
 ---
-IndentWidth: '4'
-AccessModifierOffset: '-2'
+Language: Cpp
+IndentWidth: 4
+AccessModifierOffset: -2
 AlignConsecutiveMacros: 'true'
 AlignConsecutiveAssignments: 'false'
 AlignConsecutiveDeclarations: 'false'
@@ -38,7 +39,6 @@ IncludeBlocks: Regroup
 IndentCaseLabels: 'true'
 IndentPPDirectives: BeforeHash
 IndentWrappedFunctionNames: 'false'
-Language: Cpp
 MaxEmptyLinesToKeep: '1'
 NamespaceIndentation: None
 PointerAlignment: Right
@@ -65,17 +65,18 @@ UseTab: Never
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 
 # clang-format > 13
-IndentCaseBlocks: 'true'
+IndentCaseBlocks: 'false'
 IndentExternBlock: AfterExternBlock
 # BraceWrapping.AfterExternBlock: 'true'
 AllowShortEnumsOnASingleLine: 'false'
 SpaceBeforeCaseColon: 'false'
 AlignArrayOfStructures: Left
 EmptyLineAfterAccessModifier: Never
-IndentAccessModifiers: 'true'
 LambdaBodyIndentation : OuterScope
 ReferenceAlignment: Right
 ShortNamespaceLines: 0
-# QualifierOrder: ['inline', 'static', 'type', 'const', 'volatile' ]
-# SeparateDefinitionBlocks: Always
-# InsertBraces: 'true'
+# QualifierOrder: ['inline', 'static', 'const', 'type']
+SeparateDefinitionBlocks: Always
+InsertBraces: 'true'
+...
+

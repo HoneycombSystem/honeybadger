@@ -79,6 +79,6 @@ for dir in "$@"; do
          -o -name '*.h' \
          -o -name '*.hh' \
          -o -name '*.hpp' \) \
-         -exec "${FMT}" --verbose -i '{}' \;
+         -exec "${FMT}" -style=file --verbose -i '{}' \;
     popd &>/dev/null
 done

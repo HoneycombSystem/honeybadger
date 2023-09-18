@@ -56,8 +56,8 @@ Is not necessary to write acceptance criteria for each task. But it is necessary
 
 ## Development process
 ### 1. Create a theme
-* The theme name **MUST** be added into the file `docs/themes.md` with short description.
-* The theme **MUST** be described in the file `docs/<theme_name>/theme.md`.
+* The theme name **MUST** be added into the file `docs/themes/themes.md` with short description.
+* The theme **MUST** be described in the file `docs/themes/<theme_name>/theme.md`.
 * The theme **MUST** be described a problem that it solves.
 * The theme **SHOULD** be described in the present tense.
 * The theme **SHOULD** be described in the active voice.
@@ -67,31 +67,31 @@ Is not necessary to write acceptance criteria for each task. But it is necessary
 * The theme **MUST** be described what value it brings to the user.
 
 ### 2. Create an epic
-* The epic name **MUST** be added into the file `docs/<theme_name>/epics.md` with short description.
-* The epic **MUST** be described in the file `docs/<theme_name>/<epic_name>/epic.md`.
+* The epic name **MUST** be added into the file `docs/themes/<theme_name>/epics.md` with short description.
+* The epic **MUST** be described in the file `docs/themes/<theme_name>/<epic_name>/epic.md`.
 * The epic **MUST** be described a problem that it solves.
 * The epic **SHOULD** be described in the present tense.
 * The epic **SHOULD** be described in the active voice.
 * The epic **SHOULD** be described in the third person.
 
 ### 3. Create a feature
-* The feature name **MUST** be added into the file `docs/<theme_name>/<epic_name>/features.md` with short description.
-* The feature **MUST** be described in the file `docs/<theme_name>/<epic_name>/<feature_name>/feature.md`.
+* The feature name **MUST** be added into the file `docs/themes/<theme_name>/<epic_name>/features.md` with short description.
+* The feature **MUST** be described in the file `docs/themes/<theme_name>/<epic_name>/<feature_name>/feature.md`.
 * The feature **MUST** be described a problem that it solves.
 * The feature **SHOULD** be described in the present tense.
 * The feature **SHOULD** be described in the active voice.
 * The feature **SHOULD** be described in the third person.
 
 ### 4. Create a user story
-* The user story name **MUST** be added into the file `docs/<theme_name>/<epic_name>/<feature_name>/user_stories.md` with short description.
-* The user story **MUST** be described in the file `docs/<theme_name>/<epic_name>/<feature_name>/<user_story_name>/user_story.md`.
+* The user story name **MUST** be added into the file `docs/themes/<theme_name>/<epic_name>/<feature_name>/user_stories.md` with short description.
+* The user story **MUST** be described in the file `docs/themes/<theme_name>/<epic_name>/<feature_name>/<user_story_name>/user_story.md`.
 * The user story **MUST** be described a problem that it solves.
 * The user story **SHOULD** be described in the present tense.
 * The user story **SHOULD** be described in the active voice.
 * The user story **SHOULD** be described in the third person.
 
 ### 5. Create a acceptance criteria
-* The acceptance criteria **MUST** be described in the file `docs/<theme_name>/<epic_name>/<feature_name>/<user_story_name>/acceptance_criteria.md`.
+* The acceptance criteria **MUST** be described in the file `docs/themes/<theme_name>/<epic_name>/<feature_name>/<user_story_name>/acceptance_criteria.md`.
 
 ### 6. Create a task
 * The task name **MUST** be added into github issues with short description.

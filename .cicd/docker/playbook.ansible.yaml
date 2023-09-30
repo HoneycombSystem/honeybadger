@@ -1,0 +1,45 @@
+- name: Building and uploading Docker images to Docker Hub
+  hosts: localhost
+
+  vars:
+    docker_repository: "0xd00d2bad/honeybadger_ci"
+    docker_date_tag: "{{ ansible_date_time.date }}"
+
+  tasks:
+    - name: Remove image with latest tag
+      become: yes
+      docker_image:
+        state: absent
+        name: "{{ docker_repository }}"
+        tag: "latest"
+
+    - name: Remove image with current date tag
+      become: yes
+      docker_image:
+        state: absent
+        name: "{{ docker_repository }}"
+        tag: "{{ docker_date_tag }}"
+
+    - name: Building an image with the latest tag and push
+      become: yes
+      docker_image:
+        source: build
+        build:
+          path: ./
+          dockerfile: Dockerfile
+          nocache: yes
+          pull: no
+        name: "{{ docker_repository }}"
+        force_tag: true
+        push: yes
+      register: image_build
+
+    - name: Add tag with current date and push
+      become: yes
+      docker_image:
+        name: "{{ docker_repository }}:latest"
+        repository: "{{ docker_repository }}:{{ docker_date_tag }}"
+        state: present
+        pull: no
+        push: yes
+      when: image_build.changed

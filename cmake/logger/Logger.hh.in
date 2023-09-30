@@ -1,0 +1,103 @@
+// clang-format off
+#pragma once
+#define PACKAGE_NAME "@PACKAGE_NAME@" // NOLINT
+#define COMPONENT_NAME "@COMPONENT_NAME@" // NOLINT
+#define MODULE_VERSION "@PROJECT_VERSION@" // NOLINT
+#include <spdlog/spdlog.h>
+#include <fmt/format.h>
+#include <iostream>
+#include <spdlog/async.h>
+#include <spdlog/cfg/env.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include "spdlog/sinks/stdout_color_sinks.h"
+
+
+namespace honeybadger::@PACKAGE_NAME@::@COMPONENT_NAME@
+{
+class Logger
+{
+  private:
+    Logger(const Logger &) = delete;
+    Logger(Logger &&) = delete;
+
+    Logger &operator=(const Logger &) = delete;
+    Logger &operator=(Logger &&) = delete;
+
+    using logger_t = std::shared_ptr<spdlog::logger>;
+    logger_t logger_{nullptr};
+    std::mutex mutex_{};
+
+    Logger()
+    try
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if(auto logger = spdlog::get(COMPONENT_NAME))
+        {
+            logger_ = logger;
+        }
+        else
+        {
+            spdlog::init_thread_pool(8192, 1);
+            auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/honeybadger/honeybadger.log");
+            auto fileSinkForComponent = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+                fmt::format("logs/{}/{}.log", PACKAGE_NAME, COMPONENT_NAME).data());
+            auto colorConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+            static auto threadPool = spdlog::thread_pool();
+            logger_ = std::make_shared<spdlog::async_logger>(COMPONENT_NAME,
+                                                             spdlog::sinks_init_list{colorConsoleSink,
+                                                                                     fileSinkForComponent,
+                                                                                     fileSink},
+                                                             threadPool);
+            logger_->set_pattern("[%Y-%m-%dT%T.%eZ] [%n] [%l] [%P:%t] communication_protocol/network/%s:%#: %v",
+                                 spdlog::pattern_time_type::utc);
+            colorConsoleSink->set_pattern("[%Y-%m-%dT%T.%eZ] [%n] [%l]: %v");
+            spdlog::register_logger(logger_);
+        }
+        logger_->flush_on(spdlog::level::warn);
+        spdlog::flush_every(std::chrono::milliseconds(100));
+#ifndef NDEBUG
+        logger_->set_level(spdlog::level::trace);
+#endif
+        spdlog::cfg::load_env_levels();
+        const auto logLevel = logger_->level();
+        const auto logOutputDir = std::dynamic_pointer_cast<spdlog::sinks::basic_file_sink_mt>(logger_->sinks().at(1))->filename();
+
+        logger_->info("Logger << {} >> set at level: << {} >>. Output file << {} >>.",
+            logger_->name(),
+            spdlog::level::to_string_view(logLevel),
+            logOutputDir);
+    }
+    catch(const spdlog::spdlog_ex &ex)
+    {
+        std::cerr << "Log init failed[spdlog exception(spdlog_ex)]: " << ex.what() << std::endl;
+    }
+    catch(const std::exception &ex)
+    {
+        std::cerr << "Log init filed[standard exception(std::exception)]: " << ex.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "Log init filed[undefined exception(...)]" << std::endl;
+    }
+
+  public:
+    static logger_t getLogger(const std::string &loggerName)
+    {
+        static Logger instance_;
+        return spdlog::get(loggerName);
+    }
+};
+} // namespace honeybadger::@PACKAGE_NAME@::@COMPONENT_NAME@
+
+#define GET_LOGGER(logger_name) honeybadger::@PACKAGE_NAME@::@COMPONENT_NAME@::Logger::getLogger(logger_name) // NOLINT
+#define TRACE_LOG(...) SPDLOG_LOGGER_CALL(GET_LOGGER(COMPONENT_NAME), spdlog::level::trace, __VA_ARGS__) // NOLINT
+#ifndef NDEBUG
+    #define DEBUG_LOG(...) SPDLOG_LOGGER_CALL(GET_LOGGER(COMPONENT_NAME), spdlog::level::debug, __VA_ARGS__) // NOLINT
+#else
+    #define DEBUG_LOG(...) void() // NOLINT
+#endif
+#define INFO_LOG(...) SPDLOG_LOGGER_CALL(GET_LOGGER(COMPONENT_NAME), spdlog::level::info, __VA_ARGS__) // NOLINT
+#define WARN_LOG(...) SPDLOG_LOGGER_CALL(GET_LOGGER(COMPONENT_NAME), spdlog::level::warn, __VA_ARGS__) // NOLINT
+#define ERROR_LOG(...) SPDLOG_LOGGER_CALL(GET_LOGGER(COMPONENT_NAME), spdlog::level::err, __VA_ARGS__) // NOLINT
+#define CRITICAL_LOG(...) SPDLOG_LOGGER_CALL(GET_LOGGER(COMPONENT_NAME), spdlog::level::critical, __VA_ARGS__) // NOLINT
+// clang-format on

@@ -1,0 +1,270 @@
+version: 2.1
+
+executors:
+  ubuntu22.04-docker:
+    docker:
+      - image: 0xd00d2bad/honeybadger_ci:latest
+
+commands:
+  check_formatting:
+    steps:
+      - run:
+          name: "Formatting check"
+          command: |
+            bash ./scripts/format_all.sh
+  install_dependencies:
+    parameters:
+      build_type:
+        default: "Release"
+        type: string
+    steps:
+      - run:
+          name: "Dependency installation"
+          command: |
+            conan install . --output-folder=build --build=missing -s build_type=$<< parameters.build_type >>
+  run_configure:
+    parameters:
+      build_type:
+        default: "Release"
+        type: string
+      enable_code_coverage:
+        default: "OFF"
+        type: string
+    steps:
+      - run:
+          name: "Configuration"
+          command: |
+            cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=$<< parameters.build_type >> -DENABLE_CODE_COVERAGE=$<< parameters.enable_code_coverage >>
+  run_build:
+    parameters:
+      jobs:
+        default: 0
+        type: integer
+    steps:
+      - run:
+          name: "Build"
+          command: |
+            cmake --build build --parallel $<< parameters.job_number >>
+  run_tests:
+    steps:
+      - run:
+          name: "Run test"
+          command: |
+            ctest --test-dir build --no-compress-output -T Test --output-junit Testing/results.xml --rerun-failed --output-on-failure -V
+  run_code_coverage:
+    steps:
+      - run:
+          name: "Run lcov coverage report generation"
+          command: |
+            lcov --capture --directory build/packages --directory build/services --output-file build/Testing/coverage.info --rc lcov_branch_coverage=1
+            lcov --remove build/Testing/coverage.info '/usr/*' --output-file build/Testing/coverage.info --rc lcov_branch_coverage=1 # filter system files
+            lcov --remove build/Testing/coverage.info '/**/.conan/*' --output-file build/Testing/coverage.info --rc lcov_branch_coverage=1 # filter conan files
+            lcov --remove build/Testing/coverage.info '**/packages/**/tests/*' --output-file build/Testing/coverage.info --rc lcov_branch_coverage=1 # filter conan files
+            lcov --remove build/Testing/coverage.info '**/services/**/tests/*' --output-file build/Testing/coverage.info --rc lcov_branch_coverage=1 # filter conan files
+            lcov --remove build/Testing/coverage.info '**/build/**/Logger.*' --output-file build/Testing/coverage.info --rc lcov_branch_coverage=1 # filter conan files
+            coveralls-lcov --service_name=CircleCI --repo-token $COVERALLS_TOKEN build/Testing/coverage.info
+      - run:
+          name: "Run gcovr coverage report generation"
+          command: |
+            gcovr --sonarqube build/Testing/coverage.xml --branches
+  run_code_analysis:
+    steps:
+      - run:
+          name: "Run sonar scanner"
+          command: |
+            sonar-scanner -Dproject.settings=.cicd/sonar-project.properties -Dsonar.login=$SONAR_TOKEN > sonar-scanner.log 2>&1
+  create_artifacts:
+    steps:
+      - run:
+          name: "Create artifacts"
+          command: |
+            mkdir -p /dump
+            mv sonar-scanner.log /dump
+            mv build/bin/logs /dump
+            mv build/Testing /dump
+          when: on_fail
+
+jobs:
+  code_analysis:
+    executor: ubuntu22.04-docker
+    parallelism: 4
+    steps:
+      - checkout
+      - check_formatting
+      - install_dependencies:
+          build_type: "Debug"
+      - run_configure:
+          build_type: "Debug"
+          enable_code_coverage: "ON"
+      - run_build:
+          jobs: 2
+      - run_tests
+      - run_code_coverage
+      - run_code_analysis
+      - create_artifacts
+      - store_test_results:
+          path: build/Testing/results.xml
+      - store_artifacts:
+          path: /dump
+
+  # build:
+  #   parameters:
+  #     os:
+  #       type: executor
+  #   executor: << parameters.os >>
+  #   working_directory: ~/toad_cicd
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/toad_cicd
+  #     - run:
+  #         name: "Dependency installation"
+  #         command: |
+  #           conan install . --output-folder=build --build=missing -s build_type=Release
+  #     - run:
+  #         name: "Configure"
+  #         command: |
+  #           cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=Release
+  #     - run:
+  #         name: "Build"
+  #         command: |
+  #           cmake --build build --parallel 2
+  #     - persist_to_workspace:
+  #         root: ~/toad_cicd
+  #         paths:
+  #           - ./build
+
+  # test:
+  #   parameters:
+  #     os:
+  #       type: executor
+  #   executor: << parameters.os >>
+  #   parallelism: 4
+  #   working_directory: ~/toad_cicd
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/toad_cicd
+  #     - run:
+  #         name: "Run tests"
+  #         command: |
+  #           ctest --test-dir build --no-compress-output -T Test --output-junit Testing/results.xml --rerun-failed --output-on-failure
+  #     - store_test_results:
+  #         path: build/Testing/results.xml
+  #     # - store_artifacts:
+  #     #     path: build/Testing
+  #     - persist_to_workspace:
+  #         root: ~/toad_cicd
+  #         paths:
+  #           - build
+
+  # deploy_docs:
+  #   docker:
+  #     - image: alpine:latest
+  #   working_directory: ~/toad_cicd
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/toad_cicd
+  #     - run:
+  #         name: Install and configure git
+  #         command: |
+  #           apk add git
+  #           git clone -b gh-pages https://github.com/MateuszMiekicki/honeybadger.git
+  #           cd honeybadger
+  #           git config user.email ""
+  #           git config user.name "ci-build"
+  #     - run:
+  #         name: Delete old docs and move new
+  #         command: |
+  #           cd honeybadger
+  #           rm -irf html
+  #           mv ../build/docs/html .
+  #     - run:
+  #         name: Deploy docs
+  #         command: |
+  #           cd honeybadger
+  #           git add -fA
+  #           git commit --allow-empty -m "auto commit [ci skip]<< pipeline.number >>"
+  #           git push https://$GITHUB_DEPLOY_TOKEN@github.com/MateuszMiekicki/honeybadger.git -f
+
+  # delivery:
+  #   parameters:
+  #     os:
+  #       type: executor
+  #   executor: << parameters.os >>
+  #   working_directory: ~/toad_cicd
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/toad_cicd
+  #     - run: |
+  #         ls -la
+  #         cd build
+  #         ls -la
+  # deploy:
+  #   parameters:
+  #     os:
+  #       type: executor
+  #   executor: << parameters.os >>
+  #   working_directory: ~/toad_cicd
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/toad_cicd
+  #     - run: |
+  #         ls -la
+  #         cd build
+  #         ls -la
+workflows:
+  ci-cd:
+    jobs:
+      - code_analysis:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      # - build:
+      #     matrix:
+      #       parameters:
+      #         os: [ ubuntu22.04-docker ]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - gh-pages
+      #     requires:
+      #       - code_analysis
+      # - test:
+      #     matrix:
+      #       parameters:
+      #         os: [ ubuntu22.04-docker ]
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - gh-pages
+      #     requires:
+      #       - build
+      # - delivery:
+      #     matrix:
+      #       parameters:
+      #         os: [ ubuntu22.04-docker ]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - test
+      # - deploy:
+      #     matrix:
+      #       parameters:
+      #         os: [ ubuntu22.04-docker ]
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - test
+      # - deploy_docs:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - test

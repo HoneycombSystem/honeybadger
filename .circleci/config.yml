@@ -34,7 +34,7 @@ commands:
       - run:
           name: "Configuration"
           command: |
-            cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=$<< parameters.build_type >> -DENABLE_CODE_COVERAGE=$<< parameters.enable_code_coverage >>
+            cmake -Bbuild -GNinja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$<< parameters.build_type >> -DENABLE_CODE_COVERAGE=$<< parameters.enable_code_coverage >>
   run_build:
     parameters:
       jobs:

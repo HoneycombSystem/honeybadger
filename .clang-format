@@ -44,7 +44,6 @@ NamespaceIndentation: None
 PointerAlignment: Right
 ReflowComments: true
 SortIncludes: CaseInsensitive
-SortUsingDeclarations: CaseInsensitive
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
@@ -75,7 +74,13 @@ EmptyLineAfterAccessModifier: Never
 LambdaBodyIndentation : OuterScope
 ReferenceAlignment: Right
 ShortNamespaceLines: 0
-# QualifierOrder: [inline, static, const, type]
+QualifierOrder: [inline, static, const, type]
 SeparateDefinitionBlocks: Always
 InsertBraces: true
+# InsertNewlineAtEOF: true
+# IntegerLiteralSeparator:
+#   Binary: 4
+#   Decimal: 3
+#   Hex: 4
+# KeepEmptyLinesAtEOF: true
 ...

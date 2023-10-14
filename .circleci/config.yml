@@ -21,7 +21,7 @@ commands:
       - run:
           name: "Dependency installation"
           command: |
-            conan install . --output-folder=build --build=missing -s build_type=$<< parameters.build_type >>
+            conan install . --output-folder=build --install-folder=build --build=missing -s build_type=$<< parameters.build_type >>
   run_configure:
     parameters:
       build_type:

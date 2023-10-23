@@ -6,16 +6,16 @@ namespace honeybadger::optical_character_recognition::image::format
 class Tiff : public interface::Image
 {
   private:
-    types::raw_image_t raw_image_;
-    types::width_t width_;
-    types::height_t height_;
+    types::RawImage rawImage_;
+    types::Width width_;
+    types::Height height_;
     types::ColorSpace colorSpace_;
 
   public:
-    Tiff(types::raw_image_t&&, types::width_t, types::height_t, types::ColorSpace);
-    virtual types::raw_image_t data() const noexcept override;
-    virtual types::width_t width() const noexcept override;
-    virtual types::height_t height() const noexcept override;
+    Tiff(types::RawImage &&, types::Width, types::Height, types::ColorSpace);
+    virtual types::RawImage data() const noexcept override;
+    virtual types::Width width() const noexcept override;
+    virtual types::Height height() const noexcept override;
     virtual types::ColorSpace colorSpace() const noexcept override;
 };
 } // namespace honeybadger::optical_character_recognition::image::format

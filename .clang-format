@@ -69,12 +69,12 @@ IndentExternBlock: AfterExternBlock
 # BraceWrapping.AfterExternBlock: true
 AllowShortEnumsOnASingleLine: false
 SpaceBeforeCaseColon: false
-AlignArrayOfStructures: Left
+# AlignArrayOfStructures: Left
 EmptyLineAfterAccessModifier: Never
 LambdaBodyIndentation : OuterScope
 ReferenceAlignment: Right
 ShortNamespaceLines: 0
-QualifierOrder: [inline, static, const, type]
+# QualifierOrder: [inline, static, const, type]
 SeparateDefinitionBlocks: Always
 InsertBraces: true
 # InsertNewlineAtEOF: true

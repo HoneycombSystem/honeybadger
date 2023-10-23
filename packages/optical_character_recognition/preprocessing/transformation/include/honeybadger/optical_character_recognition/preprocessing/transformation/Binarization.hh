@@ -1,16 +1,21 @@
 #pragma once
+#include "honeybadger/common/types/strong_type/StrongType.hh"
 #include "honeybadger/optical_character_recognition/preprocessing/transformation/interface/Transformation.hh"
 
 namespace honeybadger::optical_character_recognition::preprocessing::transformation
 {
+using Threshold = common::types::StrongType<std::uint8_t, struct ThresholdTag>;
+using MaxValue = common::types::StrongType<std::uint8_t, struct MaxValueTag>;
+
 class Binarization : public interface::Transformation
 {
   private:
-    std::uint8_t threshold_;
-    std::uint8_t maxValue_;
+    Threshold threshold_;
+    MaxValue maxValue_;
 
   public:
-    Binarization(std::uint8_t, std::uint8_t);
-    image::format::types::raw_image_t apply(const image::format::types::raw_image_t&) const override;
+    Binarization(Threshold, MaxValue);
+    image::format::types::RawImage apply(const image::format::types::RawImage &) const override;
 };
-} // namespace honeybadger::optical_character_recognition::preprocessing::transformation
+} // namespace
+  // honeybadger::optical_character_recognition::preprocessing::transformation

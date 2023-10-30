@@ -16,7 +16,7 @@ image::format::types::RawImage Binarization::apply(const image::format::types::R
                   image.end(),
                   [&result, this](const auto &pixel)
                   {
-        const auto value = Byte(pixel.value() > threshold_.value() ? maxValue_.value() : 0);
+        const auto value = Byte(pixel.value() > threshold_.value() ? maxValue_.value() : static_cast<std::uint8_t>(0));
         result.push_back(value);
     });
     return result;

@@ -6,21 +6,24 @@ template<typename T, typename Tag>
 class StrongType
 {
   public:
-    explicit StrongType(T const &value) : value_(value)
+    template<typename... Args>
+    explicit StrongType(Args... values) : value_(values...)
     {
     }
+
+    StrongType(const StrongType &) = default;
+    StrongType(StrongType &&) = default;
+    StrongType &operator=(const StrongType &) = default;
+    StrongType &operator=(StrongType &&) = default;
+
+    ~StrongType() = default;
+
+    friend auto operator<=>(const StrongType &lhs, const StrongType &rhs) = default;
 
     T value() const
     {
         return value_;
     }
-
-    explicit operator T() const
-    {
-        return value_;
-    }
-
-    friend auto operator<=>(const StrongType &lhs, const StrongType &rhs) = default;
 
   private:
     T value_;

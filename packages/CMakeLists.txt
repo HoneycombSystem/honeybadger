@@ -1,2 +1,3 @@
 add_subdirectory(optical_character_recognition)
 add_subdirectory(common)
+add_subdirectory(communication)

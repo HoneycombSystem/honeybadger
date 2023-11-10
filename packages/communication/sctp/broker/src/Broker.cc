@@ -1,4 +1,5 @@
 #include "honeybadger/communication/sctp/broker/Broker.hh"
+#include "honeybadger/communication/sctp/broker/interface/Sctp.hh"
 
 namespace honeybadger::communication::sctp
 {

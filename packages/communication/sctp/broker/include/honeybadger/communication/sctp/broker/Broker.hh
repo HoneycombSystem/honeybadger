@@ -1,4 +1,5 @@
 #pragma once
+#include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/sctp/broker/interface/Broker.hh"
 #include "honeybadger/communication/sctp/broker/interface/Sctp.hh"
 #include <memory>

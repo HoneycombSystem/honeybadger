@@ -16,8 +16,6 @@ find_package(GTest QUIET REQUIRED)
 include(GoogleTest)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${COMPONENT_NAME}_${MODULE_NAME})
-target_link_libraries(${PROJECT_NAME} PRIVATE honeybadger::optical_character_recognition::image)
-
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE GTest::gtest

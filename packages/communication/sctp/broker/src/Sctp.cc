@@ -85,7 +85,16 @@ bool Sctp::accept()
 {
     try
     {
-        acceptor_.accept(socket_);
+        auto newConnection = std::make_shared<Protocol::socket>(acceptor_.get_executor());
+        acceptor_.async_accept(*newConnection,
+                               [this, newConnection](const boost::system::error_code &error)
+                               {
+            if(!error)
+            {
+                INFO_LOG("SCTP socket accepted");
+            }
+            accept();
+        });
     }
     catch(const boost::system::system_error &error)
     {

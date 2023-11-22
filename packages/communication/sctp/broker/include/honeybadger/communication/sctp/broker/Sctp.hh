@@ -6,6 +6,7 @@ namespace honeybadger::communication::sctp
 {
 class Sctp : public interface::Sctp
 {
+  private:
     // using protocol = asio::generic::seq_packet_protocol;
     using Protocol = boost::asio::generic::stream_protocol;
     boost::asio::io_context ioContext_;
@@ -17,8 +18,6 @@ class Sctp : public interface::Sctp
     bool bind(const common::types::Endpoint &) override;
     bool listen() override;
     bool accept() override;
-    bool send(const common::types::Payload &) override;
-    common::types::Payload recv() override;
     bool close() override;
 };
 } // namespace honeybadger::communication::sctp

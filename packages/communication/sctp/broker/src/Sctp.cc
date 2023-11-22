@@ -10,9 +10,9 @@
 #elif _WIN32
     #include <winsock2.h>
     #include <ws2tcpip.h>
-    #error Code for SCTP implementation for this Windows is missing
+    #warning Code for SCTP implementation for this Windows is missing
 #else
-    #warning Code for SCTP implementation for this system is missing
+    #error Code for SCTP implementation for this system is missing
 #endif
 
 namespace
@@ -107,16 +107,6 @@ bool Sctp::accept()
         return false;
     }
     return true;
-}
-
-bool Sctp::send(const common::types::Payload &)
-{
-    return true;
-}
-
-common::types::Payload Sctp::recv()
-{
-    return common::types::Payload();
 }
 
 bool Sctp::close()

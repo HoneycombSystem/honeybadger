@@ -3,7 +3,7 @@ version: 2.1
 executors:
   ubuntu22.04-docker:
     docker:
-      - image: 0xd00d2bad/honeybadger_ci:latest
+      - image: 0xd00d2bad/honeybadger_ci:2023-09-20
 
 commands:
   check_formatting:
@@ -27,14 +27,11 @@ commands:
       build_type:
         default: "Release"
         type: string
-      enable_code_coverage:
-        default: "OFF"
-        type: string
     steps:
       - run:
           name: "Configuration"
           command: |
-            cmake -Bbuild -GNinja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$<< parameters.build_type >> -DENABLE_CODE_COVERAGE=$<< parameters.enable_code_coverage >>
+            cmake -Bbuild -GNinja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$<< parameters.build_type >>
   run_build:
     parameters:
       jobs:
@@ -95,7 +92,6 @@ jobs:
           build_type: "Debug"
       - run_configure:
           build_type: "Debug"
-          enable_code_coverage: "ON"
       - run_build:
           jobs: 2
       - run_tests

@@ -40,6 +40,9 @@ message(
 
 include(gcc_flags)
 include(enable_code_coverage)
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+  set(ENABLE_CODE_COVERAGE ON)
+endif()
 include(use_sanitizer)
 include(enable_tests)
 include(logger/add_logger)

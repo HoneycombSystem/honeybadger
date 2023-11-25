@@ -67,7 +67,7 @@ commands:
           name: "Run gcovr coverage report generation"
           command: |
             gcovr --sonarqube build/Testing/coverage.xml --branches
-  run_code_analysis:
+  run_static_code_analysis:
     steps:
       - run:
           name: "Run sonar scanner"
@@ -99,7 +99,7 @@ jobs:
           jobs: 2
       - run_tests
       - run_code_coverage
-      - run_code_analysis
+      - run_static_code_analysis
       - create_artifacts
       - store_test_results:
           path: build/Testing/results.xml

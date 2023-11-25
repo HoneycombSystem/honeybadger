@@ -4,9 +4,9 @@ executors:
   honeybadger_ci-docker:
     docker:
       - image: 0xd00d2bad/honeybadger_ci:2023-09-20
-        auth:
-          username: $DOCKER_HUB_USERNAME
-          password: $DOCKER_HUB_ACCESS_TOKEN
+        # auth:
+        #   username: $DOCKER_HUB_USERNAME
+        #   password: $DOCKER_HUB_ACCESS_TOKEN
 
 commands:
   check_formatting:

@@ -41,7 +41,7 @@ commands:
       - run:
           name: "Build"
           command: |
-            cmake --build build --parallel $<< parameters.job_number >>
+            cmake --build build --parallel $<< parameters.jobs >>
   run_tests:
     steps:
       - run:

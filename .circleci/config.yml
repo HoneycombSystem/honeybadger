@@ -73,10 +73,10 @@ commands:
           name: "Run sonar scanner"
           command: |
             sonar-scanner -Dproject.settings=.cicd/sonar-project.properties -Dsonar.login=$SONAR_TOKEN > sonar-scanner.log 2>&1
-  create_artifacts:
+  create_artifacts_on_fail:
     steps:
       - run:
-          name: "Create artifacts"
+          name: "Create artifacts on fail"
           command: |
             mkdir -p /dump
             mv sonar-scanner.log /dump
@@ -100,7 +100,7 @@ jobs:
       - run_tests
       - run_code_coverage
       - run_static_code_analysis
-      - create_artifacts
+      - create_artifacts_on_fail
       - store_test_results:
           path: build/Testing/results.xml
       - store_artifacts:

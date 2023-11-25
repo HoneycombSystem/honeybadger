@@ -1,7 +1,7 @@
 version: 2.1
 
 executors:
-  ubuntu22.04-docker:
+  honeybadger_ci-docker:
     docker:
       - image: 0xd00d2bad/honeybadger_ci:2023-09-20
 
@@ -83,7 +83,7 @@ commands:
 
 jobs:
   code_analysis:
-    executor: ubuntu22.04-docker
+    executor: honeybadger_ci-docker
     parallelism: 4
     steps:
       - checkout
@@ -220,7 +220,7 @@ workflows:
       # - build:
       #     matrix:
       #       parameters:
-      #         os: [ ubuntu22.04-docker ]
+      #         os: [ honeybadger_ci-docker ]
       #     filters:
       #       branches:
       #         ignore:
@@ -230,7 +230,7 @@ workflows:
       # - test:
       #     matrix:
       #       parameters:
-      #         os: [ ubuntu22.04-docker ]
+      #         os: [ honeybadger_ci-docker ]
       #     filters:
       #       branches:
       #         ignore:
@@ -240,7 +240,7 @@ workflows:
       # - delivery:
       #     matrix:
       #       parameters:
-      #         os: [ ubuntu22.04-docker ]
+      #         os: [ honeybadger_ci-docker ]
       #     filters:
       #       branches:
       #         only:
@@ -250,7 +250,7 @@ workflows:
       # - deploy:
       #     matrix:
       #       parameters:
-      #         os: [ ubuntu22.04-docker ]
+      #         os: [ honeybadger_ci-docker ]
       #     filters:
       #       branches:
       #         only:

@@ -3,26 +3,24 @@ project(
   honeybadger
   VERSION 0.1.0
   LANGUAGES CXX)
+
+# CMake module
+include(CMakeDependentOption)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 
-execute_process(
-  COMMAND git rev-parse --short HEAD
-  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-  OUTPUT_VARIABLE GIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-string(TIMESTAMP BUILD_TIME "%Y-%m-%dT%H:%M:%SZ" UTC)
-set(VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-
-set(ALLOW_DUPLICATE_CUSTOM_TARGETS TRUE)
 set(BUILD_SHARED_LIBS OFF)
+if(BUILD_SHARED_LIBS)
+  message(STATUS "Building shared libraries, position independent code is enabled")
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  message(AUTHOR_WARNING "Building shared libraries is not recommended")
+endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_DEBUG_POSTFIX "-debug")
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
+  set(CMAKE_BUILD_TYPE "Debug")
   message(WARNING "Set default build type: ${CMAKE_BUILD_TYPE}")
 elseif(CMAKE_BUILD_TYPE MATCHES "Release")
   set(CMAKE_BUILD_TYPE Release)
@@ -30,22 +28,21 @@ elseif(CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
   set(CMAKE_BUILD_TYPE RelWithDebInfo)
 endif()
 
-message(
-  STATUS
-    "Build info:
-  - Version: ${VERSION}
-  - Git hash: ${GIT_HASH}
-  - Build time: ${BUILD_TIME}
-  - Build type: ${CMAKE_BUILD_TYPE}")
+include(print_info_about_project)
 
-include(gcc_flags)
-include(enable_code_coverage)
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-  set(ENABLE_CODE_COVERAGE ON)
-endif()
-include(use_sanitizer)
-include(enable_tests)
+# Addtional targets
+include(generate_graphviz)
 include(logger/add_logger)
 
+# Addtional options
+include(enable_code_coverage)
+include(use_sanitizer)
+include(enable_tests)
+
+# Addtional flags for compiler and linker
+include(gcc_flags)
+include(enable_export_symbols)
+
+# These subdirectories must be included at the end
 add_subdirectory(packages)
 add_subdirectory(services)

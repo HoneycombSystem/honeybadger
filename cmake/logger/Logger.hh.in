@@ -48,9 +48,9 @@ class Logger
                                                                                      fileSinkForComponent,
                                                                                      fileSink},
                                                              threadPool);
-            logger_->set_pattern("[%Y-%m-%dT%T.%eZ] [%n] [%l] [%P:%t] communication_protocol/network/%s:%#: %v",
+            logger_->set_pattern("[%Y-%m-%dT%T.%eZ] [%n] [%l] [%P:%t] %s:%# %v",
                                  spdlog::pattern_time_type::utc);
-            colorConsoleSink->set_pattern("[%Y-%m-%dT%T.%eZ] [%n] [%l]: %v");
+            colorConsoleSink->set_pattern("[%T.%eZ] [%^%L%$]: %v");
             spdlog::register_logger(logger_);
         }
         logger_->flush_on(spdlog::level::warn);

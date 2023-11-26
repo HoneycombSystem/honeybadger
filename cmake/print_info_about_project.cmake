@@ -1,0 +1,16 @@
+execute_process(
+  COMMAND git rev-parse --short HEAD
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+  OUTPUT_VARIABLE GIT_HASH
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+string(TIMESTAMP BUILD_TIME "%Y-%m-%dT%H:%M:%SZ" UTC)
+set(VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+
+message(
+  STATUS
+    "Build info:
+  - Version: ${VERSION}
+  - Git hash: ${GIT_HASH}
+  - Build time: ${BUILD_TIME}
+  - Build type: ${CMAKE_BUILD_TYPE}")

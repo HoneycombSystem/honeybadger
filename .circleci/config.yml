@@ -24,7 +24,7 @@ commands:
       - run:
           name: "Dependency installation"
           command: |
-            conan install . --output-folder=build --install-folder=build --build=missing -s build_type=$<< parameters.build_type >>
+            conan install . --output-folder=build --install-folder=build --build=missing -s build_type=<< parameters.build_type >>
   run_configure:
     parameters:
       build_type:
@@ -34,7 +34,7 @@ commands:
       - run:
           name: "Configuration"
           command: |
-            cmake -Bbuild -GNinja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$<< parameters.build_type >>
+            cmake -Bbuild -GNinja -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=<< parameters.build_type >>
   run_build:
     parameters:
       jobs:
@@ -44,7 +44,7 @@ commands:
       - run:
           name: "Build"
           command: |
-            cmake --build build --parallel $<< parameters.jobs >>
+            cmake --build build --parallel << parameters.jobs >>
   run_tests:
     steps:
       - run:

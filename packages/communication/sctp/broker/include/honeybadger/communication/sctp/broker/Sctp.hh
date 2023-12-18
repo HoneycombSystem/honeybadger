@@ -1,6 +1,8 @@
 #pragma once
+#include "honeybadger/communication/sctp/broker/Client.hh"
 #include "honeybadger/communication/sctp/broker/interface/Sctp.hh"
 #include <boost/asio.hpp>
+#include <vector>
 
 namespace honeybadger::communication::sctp
 {
@@ -12,6 +14,11 @@ class Sctp : public interface::Sctp
     boost::asio::io_context ioContext_;
     boost::asio::basic_socket_acceptor<Protocol> acceptor_;
     Protocol::socket socket_;
+    std::vector<std::shared_ptr<Client>> clients_{};
+    bool runned = false;
+
+    void acceptHandler();
+    void acceptHandler(boost::system::error_code ec, Protocol::socket socket);
 
   public:
     Sctp();

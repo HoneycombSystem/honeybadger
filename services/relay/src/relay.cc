@@ -3,7 +3,7 @@
 int main()
 {
     honeybadger::communication::sctp::BrokerFactory brokerFactory;
-    auto broker = brokerFactory.create(honeybadger::common::types::Endpoint("127.0.0.1", 9952));
+    auto broker = brokerFactory.create(honeybadger::common::types::Endpoint("127.0.0.1", 7654));
     broker->start();
     return 0;
 }

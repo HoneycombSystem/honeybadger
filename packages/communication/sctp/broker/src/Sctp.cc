@@ -15,18 +15,6 @@
     #error Code for SCTP implementation for this system is missing
 #endif
 
-namespace
-{
-std::unique_ptr<sockaddr> createSockaddr(const honeybadger::common::types::Endpoint &endpoint)
-{
-    sockaddr_in sockaddrIn;
-    sockaddrIn.sin_family = AF_INET;
-    sockaddrIn.sin_addr.s_addr = inet_addr(endpoint.ip);
-    sockaddrIn.sin_port = htons(endpoint.port);
-    return std::make_unique<sockaddr>(reinterpret_cast<sockaddr &>(sockaddrIn));
-}
-} // namespace
-
 namespace honeybadger::communication::sctp
 {
 Sctp::Sctp() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
@@ -36,10 +24,13 @@ Sctp::Sctp() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 
 bool Sctp::bind(const common::types::Endpoint &endpoint)
 {
-    const auto sockaddr = createSockaddr(endpoint).get();
+    sockaddr_in sockaddrIn;
+    sockaddrIn.sin_family = AF_INET;
+    sockaddrIn.sin_addr.s_addr = inet_addr(endpoint.ip);
+    sockaddrIn.sin_port = htons(endpoint.port);
     const auto streamProtocolEndpoint = Protocol::endpoint{
-        &sockaddr,
-        sizeof(sockaddr),
+        reinterpret_cast<sockaddr *>(&sockaddrIn),
+        sizeof(sockaddrIn),
         IPPROTO_SCTP,
     };
     try
@@ -81,20 +72,41 @@ bool Sctp::listen()
     return true;
 }
 
+void Sctp::acceptHandler(boost::system::error_code ec, Protocol::socket socket)
+{
+    if(ec)
+    {
+        WARN_LOG("SCTP socket accept failed: {}", ec.message());
+        return;
+    }
+
+    INFO_LOG("SCTP socket accepted new connection");
+    auto session = std::make_shared<Client>(std::move(socket));
+    session->start();
+    clients_.emplace_back(std::move(session));
+    acceptHandler();
+}
+
+void Sctp::acceptHandler()
+{
+    acceptor_.async_accept(socket_,
+                           [this](boost::system::error_code ec)
+                           {
+        acceptHandler(ec, std::move(socket_));
+    });
+}
+
 bool Sctp::accept()
 {
     try
     {
-        auto newConnection = std::make_shared<Protocol::socket>(acceptor_.get_executor());
-        acceptor_.async_accept(*newConnection,
-                               [this, newConnection](const boost::system::error_code &error)
-                               {
-            if(!error)
-            {
-                INFO_LOG("SCTP socket accepted");
-            }
-            accept();
-        });
+        acceptHandler();
+        if(not runned)
+        {
+            INFO_LOG("SCTP socket run");
+            ioContext_.run();
+            runned = true;
+        }
     }
     catch(const boost::system::system_error &error)
     {

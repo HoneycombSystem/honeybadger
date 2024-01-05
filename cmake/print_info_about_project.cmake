@@ -10,7 +10,19 @@ set(VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION
 message(
   STATUS
     "Build info:
-  - Version: ${VERSION}
+  - Project:
+    - Name: ${CMAKE_PROJECT_NAME}
+    - Version: ${VERSION}
   - Git hash: ${GIT_HASH}
   - Build time: ${BUILD_TIME}
   - Build type: ${CMAKE_BUILD_TYPE}")
+
+message(TRACE
+"Build detail:
+  - System:
+    - OS: ${CMAKE_SYSTEM_NAME}
+    - Version: ${CMAKE_SYSTEM_VERSION}
+    - Architecture: ${CMAKE_SYSTEM_PROCESSOR}
+  - Toolchain:
+    - CMake: ${CMAKE_VERSION}
+    - Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")

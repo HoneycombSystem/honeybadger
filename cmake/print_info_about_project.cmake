@@ -17,8 +17,9 @@ message(
   - Build time: ${BUILD_TIME}
   - Build type: ${CMAKE_BUILD_TYPE}")
 
-message(TRACE
-"Build detail:
+message(
+  TRACE
+  "Build detail:
   - System:
     - OS: ${CMAKE_SYSTEM_NAME}
     - Version: ${CMAKE_SYSTEM_VERSION}

@@ -15,6 +15,23 @@
     #error Code for SCTP implementation for this system is missing
 #endif
 
+namespace
+{
+template<typename ProtocolEndpoint>
+ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &endpoint)
+{
+    sockaddr_in sockaddrIn;
+    sockaddrIn.sin_family = AF_INET;
+    sockaddrIn.sin_addr.s_addr = inet_addr(endpoint.ip);
+    sockaddrIn.sin_port = htons(endpoint.port);
+    return ProtocolEndpoint{
+        reinterpret_cast<sockaddr *>(&sockaddrIn),
+        sizeof(sockaddrIn),
+        IPPROTO_SCTP,
+    };
+}
+} // namespace
+
 namespace honeybadger::communication::sctp
 {
 Sctp::Sctp() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
@@ -24,15 +41,7 @@ Sctp::Sctp() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 
 bool Sctp::bind(const common::types::Endpoint &endpoint)
 {
-    sockaddr_in sockaddrIn;
-    sockaddrIn.sin_family = AF_INET;
-    sockaddrIn.sin_addr.s_addr = inet_addr(endpoint.ip);
-    sockaddrIn.sin_port = htons(endpoint.port);
-    const auto streamProtocolEndpoint = Protocol::endpoint{
-        reinterpret_cast<sockaddr *>(&sockaddrIn),
-        sizeof(sockaddrIn),
-        IPPROTO_SCTP,
-    };
+    const auto streamProtocolEndpoint = buildAsioEndpoint<Protocol::endpoint>(endpoint);
     try
     {
         acceptor_.bind(streamProtocolEndpoint);
@@ -101,12 +110,8 @@ bool Sctp::accept()
     try
     {
         acceptHandler();
-        if(not runned)
-        {
-            INFO_LOG("SCTP socket run");
-            ioContext_.run();
-            runned = true;
-        }
+        INFO_LOG("SCTP socket run");
+        ioContext_.run();
     }
     catch(const boost::system::system_error &error)
     {

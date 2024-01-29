@@ -45,4 +45,4 @@ include(enable_export_symbols)
 
 # These subdirectories must be included at the end
 add_subdirectory(packages)
-add_subdirectory(services)
+# add_subdirectory(services)

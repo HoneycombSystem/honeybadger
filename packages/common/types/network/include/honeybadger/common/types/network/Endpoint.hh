@@ -1,16 +1,43 @@
 #pragma once
+#include <arpa/inet.h>
+#include <stdexcept>
+#include <string>
 
 namespace honeybadger::common::types
 {
 struct Endpoint
 {
-    using Ip = const char*;
-    using Port = unsigned short;
-    const Ip ip;
-    const Port port;
+    using ip_t = const char*;
+    using port_t = unsigned short;
 
-    Endpoint(const Ip& i, Port p) : ip(i), port(p)
+    const ip_t ip;
+    const port_t port;
+    enum class IpVersion
     {
+        unknown,
+        v4,
+        v6
+    } ipVersion;
+
+    Endpoint(const ip_t& i, port_t p) : ip(i), port(p), ipVersion(IpVersion::unknown)
+    {
+        if(inet_pton(AF_INET, ip, nullptr))
+        {
+            ipVersion = Endpoint::IpVersion::v4;
+        }
+        else if(inet_pton(AF_INET6, ip, nullptr))
+        {
+            ipVersion = Endpoint::IpVersion::v6;
+        }
+        else
+        {
+            throw std::runtime_error("Invalid IP address: " + std::string(ip));
+        }
+
+        if(port == 0)
+        {
+            throw std::runtime_error("Invalid port: " + std::to_string(port));
+        }
     }
 };
 } // namespace honeybadger::common::types

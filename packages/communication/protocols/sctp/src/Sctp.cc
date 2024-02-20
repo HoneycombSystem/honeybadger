@@ -130,11 +130,36 @@ bool Sctp::listen()
     return true;
 }
 
+void Sctp::acceptHandler(boost::system::error_code ec, Protocol::socket)
+{
+    if(ec)
+    {
+        WARN_LOG("SCTP socket accept failed: {}", ec.message());
+        return;
+    }
+
+    INFO_LOG("SCTP socket accepted new connection");
+    // auto session = std::make_shared<Client>(std::move(socket));
+    // session->start();
+    // clients_.emplace_back(std::move(session));
+    acceptHandler();
+}
+
+void Sctp::acceptHandler()
+{
+    acceptor_.async_accept(socket_,
+                           [this](boost::system::error_code ec)
+                           {
+        acceptHandler(ec, std::move(socket_));
+    });
+}
+
 bool Sctp::accept()
 {
     try
     {
-        acceptor_.accept(socket_);
+        acceptHandler();
+        ioContext_.run();
         INFO_LOG("SCTP socket accepted");
     }
     catch(const boost::system::system_error &error)

@@ -21,6 +21,8 @@ set_target_properties(
 
 add_logger(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
+target_link_libraries(${PROJECT_NAME} PRIVATE honeybadger::communication::protocols)
+target_link_libraries(${PROJECT_NAME} PRIVATE honeybadger::communication::network)
 
 find_package(Boost 1.83.0 QUIET REQUIRED COMPONENTS system)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::system)

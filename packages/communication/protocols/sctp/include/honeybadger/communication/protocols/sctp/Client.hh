@@ -1,5 +1,5 @@
 #pragma once
-#include "honeybadger/communication/sctp/broker/interface/Client.hh"
+#include "honeybadger/communication/protocols/sctp/interface/Client.hh"
 #include <boost/asio.hpp>
 
 namespace
@@ -10,7 +10,7 @@ constexpr std::size_t operator"" _gigabyte(unsigned long long int x)
 }
 } // namespace
 
-namespace honeybadger::communication::sctp
+namespace honeybadger::communication::protocols
 {
 class Client : public interface::Client
 {
@@ -27,4 +27,4 @@ class Client : public interface::Client
     bool send(const common::types::Payload &) override;
     void start() override;
 };
-} // namespace honeybadger::communication::sctp
+} // namespace honeybadger::communication::protocols

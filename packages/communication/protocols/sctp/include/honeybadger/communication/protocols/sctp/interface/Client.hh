@@ -1,7 +1,7 @@
 #pragma once
 #include "honeybadger/common/types/network/Payload.hh"
 
-namespace honeybadger::communication::sctp::interface
+namespace honeybadger::communication::protocols::interface
 {
 class Client
 {
@@ -10,4 +10,4 @@ class Client
     virtual bool send(const common::types::Payload &) = 0;
     virtual void start() = 0;
 };
-} // namespace honeybadger::communication::sctp::interface
+} // namespace honeybadger::communication::protocols::interface

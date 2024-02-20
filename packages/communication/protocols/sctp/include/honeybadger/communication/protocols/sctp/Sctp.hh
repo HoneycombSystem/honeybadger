@@ -17,6 +17,9 @@ class Sctp : public network::interface::ServerSocket
     boost::asio::basic_socket_acceptor<Protocol> acceptor_;
     Protocol::socket socket_;
 
+    void acceptHandler();
+    void acceptHandler(boost::system::error_code ec, Protocol::socket socket);
+
   public:
     Sctp();
     bool bind(const common::types::Endpoint &) override;

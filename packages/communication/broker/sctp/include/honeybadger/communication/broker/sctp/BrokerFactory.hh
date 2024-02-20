@@ -1,11 +1,11 @@
 #pragma once
-#include "honeybadger/communication/sctp/broker/interface/BrokerFactory.hh"
+#include "honeybadger/communication/broker/sctp/interface/BrokerFactory.hh"
 
-namespace honeybadger::communication::sctp
+namespace honeybadger::communication::broker
 {
 class BrokerFactory : public interface::BrokerFactory
 {
   public:
     std::unique_ptr<interface::Broker> create(const common::types::Endpoint &) override;
 };
-} // namespace honeybadger::communication::sctp
+} // namespace honeybadger::communication::broker

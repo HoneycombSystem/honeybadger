@@ -1,5 +1,6 @@
 #pragma once
-#include <arpa/inet.h>
+// #include <arpa/inet.h>
+// #include <netinet/in.h>
 #include <stdexcept>
 #include <string>
 
@@ -21,23 +22,24 @@ struct Endpoint
 
     Endpoint(const ip_t& i, port_t p) : ip(i), port(p), ipVersion(IpVersion::unknown)
     {
-        if(inet_pton(AF_INET, ip, nullptr))
-        {
-            ipVersion = Endpoint::IpVersion::v4;
-        }
-        else if(inet_pton(AF_INET6, ip, nullptr))
-        {
-            ipVersion = Endpoint::IpVersion::v6;
-        }
-        else
-        {
-            throw std::runtime_error("Invalid IP address: " + std::string(ip));
-        }
+        ipVersion = IpVersion::v4;
+        // if(inet_pton(AF_INET, ip, nullptr))
+        // {
+        //     ipVersion = Endpoint::IpVersion::v4;
+        // }
+        // else if(inet_pton(AF_INET6, ip, nullptr))
+        // {
+        //     ipVersion = Endpoint::IpVersion::v6;
+        // }
+        // else
+        // {
+        //     throw std::runtime_error("Invalid IP address: " + std::string(ip));
+        // }
 
-        if(port == 0)
-        {
-            throw std::runtime_error("Invalid port: " + std::to_string(port));
-        }
+        // if(port == 0)
+        // {
+        //     throw std::runtime_error("Invalid port: " + std::to_string(port));
+        // }
     }
 };
 } // namespace honeybadger::common::types

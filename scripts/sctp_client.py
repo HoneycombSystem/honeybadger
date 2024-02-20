@@ -9,7 +9,7 @@ import threading
 import struct #
 
 server_ip = '127.0.0.1'
-server_port = 7654
+server_port = 9898
 
 
 sockets = []

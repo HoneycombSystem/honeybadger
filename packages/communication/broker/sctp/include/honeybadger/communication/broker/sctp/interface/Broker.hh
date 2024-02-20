@@ -1,6 +1,6 @@
 #pragma once
 
-namespace honeybadger::communication::sctp::interface
+namespace honeybadger::communication::broker::interface
 {
 class Broker
 {
@@ -9,4 +9,4 @@ class Broker
     virtual void start() = 0;
     virtual void stop() = 0;
 };
-} // namespace honeybadger::communication::sctp::interface
+} // namespace honeybadger::communication::broker::interface

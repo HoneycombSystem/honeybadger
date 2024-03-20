@@ -1,0 +1,83 @@
+@startuml package designe
+package communication {
+    package broker {
+        interface BrokerFactory{
+            +create():Broker
+        }
+        class ApplicationProtocolBrokerFactory implements BrokerFactory
+        class ControlProtocolBrokerFactory implements BrokerFactory
+
+        interface Broker{
+            +start():void
+            +stop():void
+        }
+        class ApplicationProtocolBroker implements Broker
+        class ControlProtocolBroker implements Broker
+
+        BrokerFactory -> Broker
+    }
+    package procedure {
+        interface ProcedureBuilder{
+            +build():Procedure
+            +onMessage(Message):ProcedureBuilder
+            +when(Message):ProcedureBuilder
+            +then(Message):ProcedureBuilder
+            +setAsOptional():ProcedureBuilder
+            +setTimer(Timer):ProcedureBuilder
+        }
+        interface Procedure{
+            +clientId():uuid
+            +start():void
+            +break():void
+        }
+        class Message{
+        }
+        interface MessageQueue{
+            +pop():void
+            +push(Message):void
+        }
+        interface MessageDispatcher{
+            +start():void
+        }
+    }
+    package protocol {
+        interface CommunicationProtocol{
+            +run():void
+            +stop():void
+        }
+        class ApplicationProtocol implements CommunicationProtocol
+        class ControlProtocol implements CommunicationProtocol
+        class TelemetryProtoco implements CommunicationProtocol
+
+        interface CommunicationProtocolFactory{
+            +create():CommunicationProtocol
+        }
+        class ApplicationProtocolFaconry implements CommunicationProtocolFactory
+        class ControlProtocolFaconry implements CommunicationProtocolFactory
+        class TelemetryProtocolFactory implements CommunicationProtocolFactory
+
+        CommunicationProtocolFactory -> CommunicationProtocol
+    }
+    CommunicationProtocolFactory -> BrokerFactory
+
+    package network {
+        interface Server{
+            +run():void
+            +stop():void
+        }
+        class SctpServer implements Server
+
+        interface Client{
+            +send(Message):void
+            +receive():Message
+        }
+
+        interface ServerSocket{
+            +accept():Client
+            +close():void
+            +bind():void
+            +listen():void
+        }
+    }
+}
+@endstartuml

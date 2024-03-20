@@ -39,7 +39,7 @@ send_threads = []
 
 for sock in sockets:
     send_thread = threading.Thread(target=send_data, args=(sock,))
-    send_thread.start()
+    send_thread.run()
     send_threads.append(send_thread)
 
 for send_thread in send_threads:

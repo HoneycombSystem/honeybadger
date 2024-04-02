@@ -1,21 +1,20 @@
-#include "honeybadger/communication/network/server/SctpServer.hh"
-#include "honeybadger/communication/protocols/sctp/Sctp.hh"
+#include "honeybadger/communication/protocols/server/SctpServer.hh"
+#include "honeybadger/communication/network/sctp/Sctp.hh"
 
-namespace honeybadger::communication::network
+namespace honeybadger::communication::protocols
 {
-SctpServer::SctpServer(const common::types::Endpoint& endpoint) : serverSocket_(std::make_unique<Sctp>())
+SctpServer::SctpServer(std::unique_ptr<network::interface::ServerSocket> serverSocket) : serverSocket_(std::move(serverSocket))
 {
-    serverSocket_->bind(endpoint);
     serverSocket_->listen();
 }
 
 bool SctpServer::run()
 {
-    serverSocket_->accept();
+    return serverSocket_->accept();
 }
 
 bool SctpServer::stop()
 {
-    serverSocket_->close();
+    return serverSocket_->close();
 }
-} // namespace honeybadger::communication::network
+} // namespace honeybadger::communication::protocols

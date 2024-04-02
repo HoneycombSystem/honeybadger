@@ -1,7 +1,7 @@
 #pragma once
 #include <cstddef>
 
-namespace honeybadger::communication::network ::interface
+namespace honeybadger::communication::network::interface
 {
 class Socket
 {

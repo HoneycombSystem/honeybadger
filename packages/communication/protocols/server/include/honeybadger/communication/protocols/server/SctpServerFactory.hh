@@ -1,8 +1,8 @@
 #pragma once
-#include "honeybadger/communication/network/server/interface/Server.hh"
+#include "honeybadger/communication/protocols/server/interface/Server.hh"
 #include <memory>
 
-namespace honeybadger::communication::network::interface
+namespace honeybadger::communication::protocols::interface
 {
 class SctpServerFactory : public ServerFactory
 {
@@ -12,4 +12,4 @@ class SctpServerFactory : public ServerFactory
     SctpServerFactory(const common::types::Endpoint &);
     std::unique_ptr<Server> create() override;
 };
-} // namespace honeybadger::communication::network::interface
+} // namespace honeybadger::communication::protocols::interface

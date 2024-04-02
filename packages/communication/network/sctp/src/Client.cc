@@ -1,5 +1,5 @@
-#include "honeybadger/communication/protocols/sctp/Client.hh"
-#include "honeybadger/communication/protocols/Logger.hh"
+#include "honeybadger/communication/network/sctp/Client.hh"
+#include "honeybadger/communication/network/Logger.hh"
 #include <array>
 #include <chrono>
 #include <utility>
@@ -22,7 +22,7 @@ bool isError(const boost::system::error_code &ec)
 }
 } // namespace
 
-namespace honeybadger::communication::protocols
+namespace honeybadger::communication::network
 {
 Client::Client(Protocol::socket &&socket) : socket_{std::move(socket)}
 {
@@ -60,4 +60,4 @@ bool Client::send(const common::types::Payload &payload)
     });
     return false;
 }
-} // namespace honeybadger::communication::protocols
+} // namespace honeybadger::communication::network

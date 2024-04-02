@@ -1,7 +1,7 @@
-#include "honeybadger/communication/protocols/sctp/Sctp.hh"
+#include "honeybadger/communication/network/sctp/Sctp.hh"
 #include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/common/types/network/Payload.hh"
-#include "honeybadger/communication/protocols/Logger.hh"
+#include "honeybadger/communication/network/Logger.hh"
 #include <memory>
 #ifdef __linux__
     #include <arpa/inet.h>
@@ -65,7 +65,7 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
 }
 } // namespace
 
-namespace honeybadger::communication::protocols
+namespace honeybadger::communication::network
 {
 Sctp::Sctp() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 {
@@ -210,4 +210,4 @@ bool Sctp::close()
     }
     return true;
 }
-} // namespace honeybadger::communication::protocols
+} // namespace honeybadger::communication::network

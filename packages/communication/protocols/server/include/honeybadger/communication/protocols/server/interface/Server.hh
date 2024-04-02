@@ -1,6 +1,6 @@
 #pragma once
 
-namespace honeybadger::communication::network::interface
+namespace honeybadger::communication::protocols::interface
 {
 class Server
 {
@@ -9,4 +9,4 @@ class Server
     virtual bool run() = 0;
     virtual bool stop() = 0;
 };
-} // namespace honeybadger::communication::network::interface
+} // namespace honeybadger::communication::protocols::interface

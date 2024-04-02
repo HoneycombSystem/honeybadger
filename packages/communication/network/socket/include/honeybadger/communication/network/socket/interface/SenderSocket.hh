@@ -7,7 +7,7 @@ namespace honeybadger::common::types
 using Payload;
 } // namespace honeybadger::common::types
 
-namespace honeybadger::communication::network ::interface
+namespace honeybadger::communication::network::interface
 {
 class SenderSocket
 {

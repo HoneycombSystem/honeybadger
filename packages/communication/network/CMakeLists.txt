@@ -1,6 +1,6 @@
 set(COMPONENT_NAME "network")
 
 add_subdirectory(socket)
-add_subdirectory(server)
+add_subdirectory(sctp)
 
 include(network.cmake)

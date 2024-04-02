@@ -1,7 +1,7 @@
 #pragma once
 #include "honeybadger/common/types/network/Payload.hh"
 
-namespace honeybadger::communication::protocols::interface
+namespace honeybadger::communication::network::interface
 {
 class Client
 {
@@ -10,4 +10,4 @@ class Client
     virtual bool send(const common::types::Payload &) = 0;
     virtual void run() = 0;
 };
-} // namespace honeybadger::communication::protocols::interface
+} // namespace honeybadger::communication::network::interface

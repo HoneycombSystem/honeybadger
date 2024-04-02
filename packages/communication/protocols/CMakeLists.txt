@@ -1,5 +1,5 @@
 set(COMPONENT_NAME "protocols")
 
-add_subdirectory(sctp)
+add_subdirectory(server)
 
 include(protocols.cmake)

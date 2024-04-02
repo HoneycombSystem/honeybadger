@@ -1,9 +1,9 @@
 #include "honeybadger/communication/broker/application_protocol_broker/ApplicationProtocolBroker.hh"
-#include "honeybadger/communication/network/server/interface/Server.hh"
+#include "honeybadger/communication/protocols/server/interface/Server.hh"
 
 namespace honeybadger::communication::broker
 {
-ApplicationProtocolBroker::ApplicationProtocolBroker(std::unique_ptr<network::interface::Server> server) :
+ApplicationProtocolBroker::ApplicationProtocolBroker(std::unique_ptr<protocols::interface::Server> server) :
     server_(std::move(server))
 {
 }

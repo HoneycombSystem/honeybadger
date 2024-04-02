@@ -7,7 +7,7 @@ namespace honeybadger::common::types
 class Endpoint;
 } // namespace honeybadger::common::types
 
-namespace honeybadger::communication::protocols
+namespace honeybadger::communication::network
 {
 class Sctp : public network::interface::ServerSocket
 {
@@ -27,4 +27,4 @@ class Sctp : public network::interface::ServerSocket
     bool accept() override;
     bool close() override;
 };
-} // namespace honeybadger::communication::protocols
+} // namespace honeybadger::communication::network

@@ -1,7 +1,7 @@
 #pragma once
 #include "honeybadger/common/types/Payload.hh"
 
-namespace honeybadger::communication::network ::interface
+namespace honeybadger::communication::network::interface
 {
 class ReceiverSocket
 {

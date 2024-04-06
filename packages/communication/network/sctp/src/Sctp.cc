@@ -67,15 +67,17 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
 
 namespace honeybadger::communication::network
 {
-Sctp::Sctp() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
+Sctp::Sctp(const common::types::Endpoint &endpoint) : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 {
     acceptor_.open({AF_INET, IPPROTO_SCTP});
+    bind(endpoint);
 }
 
 bool Sctp::bind(const common::types::Endpoint &endpoint)
 {
     try
     {
+        DEBUG_LOG("SCTP socket bind to {}:{}", endpoint.ip, endpoint.port);
         const auto streamProtocolEndpoint = buildAsioEndpoint<Protocol::endpoint>(endpoint);
         acceptor_.bind(streamProtocolEndpoint);
     }

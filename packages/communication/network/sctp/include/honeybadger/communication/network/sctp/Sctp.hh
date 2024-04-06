@@ -21,7 +21,7 @@ class Sctp : public network::interface::ServerSocket
     void acceptHandler(boost::system::error_code ec, Protocol::socket socket);
 
   public:
-    Sctp();
+    Sctp(const common::types::Endpoint &);
     bool bind(const common::types::Endpoint &) override;
     bool listen() override;
     bool accept() override;

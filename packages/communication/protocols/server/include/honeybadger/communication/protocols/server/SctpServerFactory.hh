@@ -8,6 +8,7 @@ class SctpServerFactory : public ServerFactory
 {
   private:
     common::types::Endpoint endpoint_;
+
   public:
     SctpServerFactory(const common::types::Endpoint &);
     std::unique_ptr<Server> create() override;

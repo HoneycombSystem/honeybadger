@@ -3,7 +3,8 @@
 
 namespace honeybadger::communication::protocols
 {
-SctpServer::SctpServer(std::unique_ptr<network::interface::ServerSocket> serverSocket) : serverSocket_(std::move(serverSocket))
+SctpServer::SctpServer(std::unique_ptr<network::interface::ServerSocket> serverSocket) :
+    serverSocket_(std::move(serverSocket))
 {
     serverSocket_->listen();
 }

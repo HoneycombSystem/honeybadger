@@ -1,3 +1,6 @@
-add_subdirectory(optical_character_recognition)
+option(BUILD_BUSINESS_LOGIC "Build business modules" ON)
+if(BUILD_BUSINESS_LOGIC)
+    add_subdirectory(optical_character_recognition)
+endif()
 add_subdirectory(common)
 add_subdirectory(communication)

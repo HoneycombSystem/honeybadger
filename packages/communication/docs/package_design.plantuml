@@ -1,4 +1,4 @@
-@startuml package designe
+@startuml package design
 package communication {
     package broker {
         interface BrokerFactory{
@@ -30,15 +30,19 @@ package communication {
             +start():void
             +break():void
         }
-        class Message{
-        }
-        interface MessageQueue{
-            +pop():void
+        class Message
+        interface MessageQueueWriter{
             +push(Message):void
+        }
+        interface MessageQueue extends MessageQueueWriter{
+            +pop():void
         }
         interface MessageDispatcher{
             +start():void
         }
+        interface MessageCollector extends MessageQueueWriter
+        MessageDispatcher -> MessageQueue
+
     }
     package protocol {
         interface CommunicationProtocol{
@@ -65,11 +69,27 @@ package communication {
             +run():void
             +stop():void
         }
-        class SctpServer implements Server
 
         interface Client{
-            +send(Message):void
-            +receive():Message
+            +send(bytes):void
+            +receive():bytes
+        }
+
+        interface ClientFinder{
+            +predicate(Client):bool
+        }
+
+        interface ClientQueue{
+            +pop():void
+            +push(Client):void
+            +find(ClientFinder):optional<Client>
+            ' {
+            '     for(client in ClientQueue){
+            '         if(predicate(client)){
+            '             return Client
+            '         }
+            '     }
+            ' }
         }
 
         interface ServerSocket{
@@ -78,6 +98,8 @@ package communication {
             +bind():void
             +listen():void
         }
+
+        Server -> ServerSocket
     }
 }
 @endstartuml

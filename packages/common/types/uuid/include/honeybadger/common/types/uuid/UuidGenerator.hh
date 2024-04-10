@@ -1,6 +1,7 @@
 #pragma once
-#include <string>
 #include "honeybadger/common/types/uuid/Uuid.hh"
+#include <string>
+
 namespace honeybadger::common::types
 {
 class UuidGenerator

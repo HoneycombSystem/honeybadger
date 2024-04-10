@@ -1,4 +1,10 @@
 @startuml package design
+package common{
+    package types{
+        class Uuid
+    }
+}
+
 package communication {
     package broker {
         interface BrokerFactory{
@@ -26,7 +32,7 @@ package communication {
             +setTimer(Timer):ProcedureBuilder
         }
         interface Procedure{
-            +clientId():uuid
+            +clientId():Uuid
             +start():void
             +break():void
         }
@@ -71,25 +77,17 @@ package communication {
         }
 
         interface Client{
+            +getIdentifier():Uuid
             +send(bytes):void
             +receive():bytes
         }
 
-        interface ClientFinder{
-            +predicate(Client):bool
-        }
-
-        interface ClientQueue{
-            +pop():void
-            +push(Client):void
-            +find(ClientFinder):optional<Client>
-            ' {
-            '     for(client in ClientQueue){
-            '         if(predicate(client)){
-            '             return Client
-            '         }
-            '     }
-            ' }
+        interface ClientBuilder{
+            +build():Client
+            +setIdentifier():ClientBuilder
+            +setSocket(Socket):ClientBuilder
+            +setSendCallback(sendCallback):ClientBuilder
+            +setReceiveCallback(receiveCallback):ClientBuilder
         }
 
         interface ServerSocket{
@@ -99,7 +97,13 @@ package communication {
             +listen():void
         }
 
+        interface SctpServerFactory{
+            +create():Server
+        }
+
         Server -> ServerSocket
+        ServerSocket -> Client
+        SctpServerFactory -> Server
     }
 }
 @endstartuml

@@ -46,9 +46,11 @@ package communication {
         interface MessageDispatcher{
             +start():void
         }
-        interface MessageCollector extends MessageQueueWriter
         MessageDispatcher -> MessageQueue
-
+        
+        interface MessageCollector{
+            +collect(Payload):void
+        }
     }
     package protocol {
         interface CommunicationProtocol{

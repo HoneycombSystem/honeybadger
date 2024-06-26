@@ -922,3 +922,5 @@ environment_run.sh.env
 private/*
 !private/.gitkeep
 !private/template
+
+.cmake/

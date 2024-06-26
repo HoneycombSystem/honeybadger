@@ -1,0 +1,25 @@
+@startuml sokcet module desing
+
+component socket {
+    interface CloseableSocket{
+        +close():bool
+    }
+
+    interface AsyncReceiverSocket{
+        +receive():void
+    }
+
+    interface AsyncSenderSocket{
+        +send(Payload):void
+    }
+
+    interface AsyncServerSocket{
+        +bind(Address):bool
+        +listen():bool
+        +accept():bool
+    }
+
+    interface AsyncSocket extends CloseableSocket, AsyncServerSocket, AsyncSenderSocket, AsyncReceiverSocket
+}
+
+@endstartuml

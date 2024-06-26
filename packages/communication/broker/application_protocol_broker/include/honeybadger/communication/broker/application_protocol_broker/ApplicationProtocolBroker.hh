@@ -1,7 +1,6 @@
 #pragma once
 #include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/broker/broker/interface/Broker.hh"
-#include "honeybadger/communication/protocols/server/interface/Server.hh"
 #include <memory>
 
 namespace honeybadger::communication::broker

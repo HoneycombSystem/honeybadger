@@ -1,7 +1,4 @@
-#include "honeybadger/communication/network/sctp/Sctp.hh"
-#include "honeybadger/common/types/network/Endpoint.hh"
-#include "honeybadger/common/types/network/Payload.hh"
-#include "honeybadger/communication/network/Logger.hh"
+#include "honeybadger/communication/network/sctp/SctpAsyncSocket.hh"
 #include <memory>
 #ifdef __linux__
     #include <arpa/inet.h>
@@ -14,6 +11,9 @@
 #else
     #error SCTP implementation for this system is missing
 #endif
+#include <boost/asio.hpp>
+#include "honeybadger/common/types/network/Endpoint.hh"
+#include "honeybadger/communication/network/Logger.hh"
 
 namespace
 {
@@ -38,25 +38,24 @@ sockaddr_in6 prepareSockaddrIn6(const honeybadger::common::types::Endpoint &endp
 template<typename ProtocolEndpoint>
 ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &endpoint)
 {
+    auto protocolEndpointBuilder = [](auto &sockaddrIn) {
+        return ProtocolEndpoint{
+            reinterpret_cast<sockaddr *>(&sockaddrIn),
+            sizeof(sockaddrIn),
+            IPPROTO_SCTP,
+        };
+    };
     switch(endpoint.ipVersion)
     {
         case honeybadger::common::types::Endpoint::IpVersion::v4:
         {
             auto sockaddrIn = prepareSockaddrIn(endpoint);
-            return ProtocolEndpoint{
-                reinterpret_cast<sockaddr *>(&sockaddrIn),
-                sizeof(sockaddrIn),
-                IPPROTO_SCTP,
-            };
+            return protocolEndpointBuilder(sockaddrIn);
         }
         case honeybadger::common::types::Endpoint::IpVersion::v6:
         {
             auto sockaddrIn6 = prepareSockaddrIn6(endpoint);
-            return ProtocolEndpoint{
-                reinterpret_cast<sockaddr *>(&sockaddrIn6),
-                sizeof(sockaddrIn6),
-                IPPROTO_SCTP,
-            };
+            return protocolEndpointBuilder(sockaddrIn6);
         }
         case honeybadger::common::types::Endpoint::IpVersion::unknown:
         default:
@@ -67,13 +66,12 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
 
 namespace honeybadger::communication::network
 {
-Sctp::Sctp(const common::types::Endpoint &endpoint) : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
+SctpAsyncSocket::SctpAsyncSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 {
     acceptor_.open({AF_INET, IPPROTO_SCTP});
-    bind(endpoint);
 }
 
-bool Sctp::bind(const common::types::Endpoint &endpoint)
+bool SctpAsyncSocket::bind(const common::types::Endpoint &endpoint)
 {
     try
     {
@@ -84,25 +82,22 @@ bool Sctp::bind(const common::types::Endpoint &endpoint)
     catch(const boost::system::system_error &error)
     {
         WARN_LOG("SCTP socket bind to {}:{} failed: {}", endpoint.ip, endpoint.port, error.what());
-        throw;
         return false;
     }
     catch(const std::exception &error)
     {
         WARN_LOG("SCTP socket bind to {}:{} failed: {}", endpoint.ip, endpoint.port, error.what());
-        throw;
         return false;
     }
     catch(...)
     {
         WARN_LOG("SCTP socket bind to {}:{} failed: unknown error", endpoint.ip, endpoint.port);
-        throw;
         return false;
     }
     return true;
 }
 
-bool Sctp::listen()
+bool SctpAsyncSocket::listen()
 {
     const auto maxListenConnections = Protocol::socket::max_listen_connections;
     DEBUG_LOG("SCTP socket listen with max connections: {}", maxListenConnections);
@@ -114,100 +109,91 @@ bool Sctp::listen()
     catch(const boost::system::system_error &error)
     {
         WARN_LOG("SCTP socket listen failed: {}", error.what());
-        throw;
         return false;
     }
     catch(const std::exception &error)
     {
         WARN_LOG("SCTP socket listen failed: {}", error.what());
-        throw;
         return false;
     }
     catch(...)
     {
         WARN_LOG("SCTP socket listen failed: unknown error");
-        throw;
         return false;
     }
     return true;
 }
 
-void Sctp::acceptHandler(boost::system::error_code ec, Protocol::socket)
-{
-    if(ec)
-    {
-        WARN_LOG("SCTP socket accept failed: {}", ec.message());
-        return;
-    }
-
-    INFO_LOG("SCTP socket accepted new connection");
-    // auto session = std::make_shared<Client>(std::move(socket));
-    // session->run();
-    // clients_.emplace_back(std::move(session));
-    acceptHandler();
-}
-
-void Sctp::acceptHandler()
-{
-    acceptor_.async_accept(socket_,
-                           [this](boost::system::error_code ec)
-                           {
-        acceptHandler(ec, std::move(socket_));
-    });
-}
-
-bool Sctp::accept()
+bool SctpAsyncSocket::accept()
 {
     try
     {
-        acceptHandler();
-        ioContext_.run();
-        INFO_LOG("SCTP socket accepted");
+        // acceptor_.async_accept();
+        INFO_LOG("SCTP socket accepted new connection");
+        return true;
     }
     catch(const boost::system::system_error &error)
     {
         WARN_LOG("SCTP socket accept failed: {}", error.what());
-        throw;
         return false;
     }
     catch(const std::exception &error)
     {
         WARN_LOG("SCTP socket accept failed: {}", error.what());
-        throw;
         return false;
     }
     catch(...)
     {
         WARN_LOG("SCTP socket accept failed: unknown error");
-        throw;
         return false;
     }
-    return true;
 }
 
-bool Sctp::close()
+// void Sctp::acceptHandler(boost::system::error_code ec, Protocol::socket)
+// {
+//     if(ec)
+//     {
+//         WARN_LOG("SCTP socket accept failed: {}", ec.message());
+//         return;
+//     }
+
+//     INFO_LOG("SCTP socket accepted new connection");
+//     // auto session = std::make_shared<Client>(std::move(socket));
+//     // session->run();
+//     // clients_.emplace_back(std::move(session));
+//     acceptHandler();
+// }
+
+// void Sctp::acceptHandler()
+// {
+//     acceptor_.async_accept(socket_,
+//                            [this](boost::system::error_code ec)
+//     {
+//         acceptHandler(ec, std::move(socket_));
+//     });
+// }
+
+bool SctpAsyncSocket::close()
 {
     try
     {
+        acceptor_.close();
         socket_.close();
-        INFO_LOG("SCTP socket closed");
+        INFO_LOG("SCTP closed");
     }
     catch(const boost::system::system_error &error)
     {
-        WARN_LOG("SCTP socket close failed: {}", error.what());
-        throw;
+        WARN_LOG("SCTP close failed: {}", error.what());
         return false;
     }
     catch(const std::exception &error)
     {
-        WARN_LOG("SCTP socket close failed: {}", error.what());
-        throw;
+        WARN_LOG("SCTP close failed: {}", error.what());
         return false;
     }
     catch(...)
     {
-        WARN_LOG("SCTP socket close failed: unknown error");
-        throw;
+        WARN_LOG("SCTP close failed: unknown error");
         return false;
     }
     return true;

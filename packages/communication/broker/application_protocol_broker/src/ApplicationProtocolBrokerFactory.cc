@@ -1,7 +1,6 @@
 #include "honeybadger/communication/broker/application_protocol_broker/ApplicationProtocolBrokerFactory.hh"
 #include "honeybadger/communication/broker/application_protocol_broker/ApplicationProtocolBroker.hh"
 #include "honeybadger/communication/network/sctp/Sctp.hh"
-#include "honeybadger/communication/protocols/server/SctpServer.hh"
 #include <memory>
 
 namespace honeybadger::communication::broker

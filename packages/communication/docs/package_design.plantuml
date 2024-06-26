@@ -6,7 +6,7 @@ package common{
 }
 
 package communication {
-    package broker {
+    component broker {
         interface BrokerFactory{
             +create():Broker
         }
@@ -20,9 +20,9 @@ package communication {
         class ApplicationProtocolBroker implements Broker
         class ControlProtocolBroker implements Broker
 
-        BrokerFactory -> Broker
+        BrokerFactory *-- Broker
     }
-    package procedure {
+    component procedure {
         interface ProcedureBuilder{
             +build():Procedure
             +onMessage(Message):ProcedureBuilder
@@ -46,13 +46,13 @@ package communication {
         interface MessageDispatcher{
             +start():void
         }
-        MessageDispatcher -> MessageQueue
-        
+        MessageDispatcher o-- MessageQueue
+
         interface MessageCollector{
             +collect(Payload):void
         }
     }
-    package protocol {
+    component protocol {
         interface CommunicationProtocol{
             +run():void
             +stop():void
@@ -68,11 +68,11 @@ package communication {
         class ControlProtocolFaconry implements CommunicationProtocolFactory
         class TelemetryProtocolFactory implements CommunicationProtocolFactory
 
-        CommunicationProtocolFactory -> CommunicationProtocol
+        CommunicationProtocolFactory *-- CommunicationProtocol
     }
-    CommunicationProtocolFactory -> BrokerFactory
+    CommunicationProtocolFactory *-- BrokerFactoryq
 
-    package network {
+    component network {
         interface Server{
             +run():void
             +stop():void
@@ -103,9 +103,11 @@ package communication {
             +create():Server
         }
 
-        Server -> ServerSocket
-        ServerSocket -> Client
-        SctpServerFactory -> Server
+        Server o-- ServerSocket
+        ServerSocket o-- Client
+        SctpServerFactory *-- Server
+
+        Broker o-- Server
     }
 }
 @endstartuml

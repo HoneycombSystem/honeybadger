@@ -1,18 +1,15 @@
 #pragma once
-#include "ReceiverSocket.hh"
-#include "SenderSocket.hh"
-#include "Socket.hh"
 
 namespace honeybadger::common::types
 {
-class Payload;
+class Endpoint;
 } // namespace honeybadger::common::types
 
 namespace honeybadger::communication::network::interface
 {
-class ClientSocket : public Socket, public Sender, public Receiver
+struct AsyncClientSocket
 {
-  public:
-    virtual ~ClientSocket() = default;
+    virtual ~AsyncClientSocket() = default;
+    virtual bool connect(const common::types::Endpoint &) = 0;
 };
 } // namespace honeybadger::communication::network::interface

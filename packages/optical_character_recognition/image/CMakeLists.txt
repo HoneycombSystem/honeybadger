@@ -1,4 +1,4 @@
-set(COMPONENT_NAME "image")
+set(MODULE_NAME "image")
 
 add_subdirectory(format)
 

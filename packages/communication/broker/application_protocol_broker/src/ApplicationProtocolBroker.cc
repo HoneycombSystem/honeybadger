@@ -1,5 +1,4 @@
 #include "honeybadger/communication/broker/application_protocol_broker/ApplicationProtocolBroker.hh"
-#include "honeybadger/communication/protocols/server/interface/Server.hh"
 
 namespace honeybadger::communication::broker
 {

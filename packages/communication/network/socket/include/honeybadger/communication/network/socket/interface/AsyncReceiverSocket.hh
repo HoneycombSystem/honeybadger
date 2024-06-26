@@ -1,12 +1,10 @@
 #pragma once
-#include <cstddef>
 
 namespace honeybadger::communication::network::interface
 {
-class Socket
+struct AsyncReceiverSocket
 {
-  public:
-    virtual ~Socket() = default;
-    virtual bool close() = 0;
+    virtual ~AsyncReceiverSocket() = default;
+    virtual void receive() = 0;
 };
 } // namespace honeybadger::communication::network::interface

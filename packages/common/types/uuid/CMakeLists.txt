@@ -1,3 +1,3 @@
-set(MODULE_NAME "uuid")
+set(COMPONENT_NAME "uuid")
 
 add_subdirectory(src)

@@ -1,5 +1,4 @@
 #pragma once
-#include "Socket.hh"
 
 namespace honeybadger::common::types
 {
@@ -8,10 +7,9 @@ class Endpoint;
 
 namespace honeybadger::communication::network::interface
 {
-class ServerSocket : public Socket
+struct AsyncServerSocket
 {
-  public:
-    virtual ~ServerSocket() = default;
+    virtual ~AsyncServerSocket() = default;
     virtual bool bind(const common::types::Endpoint &) = 0;
     virtual bool listen() = 0;
     virtual bool accept() = 0;

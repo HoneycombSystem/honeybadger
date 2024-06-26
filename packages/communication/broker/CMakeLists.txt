@@ -1,4 +1,4 @@
-set(COMPONENT_NAME "broker")
+set(MODULE_NAME "broker")
 
 add_subdirectory(broker)
 add_subdirectory(application_protocol_broker)

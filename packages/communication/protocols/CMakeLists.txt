@@ -1,5 +1,3 @@
-set(COMPONENT_NAME "protocols")
-
-add_subdirectory(server)
+set(MODULE_NAME "protocols")
 
 include(protocols.cmake)

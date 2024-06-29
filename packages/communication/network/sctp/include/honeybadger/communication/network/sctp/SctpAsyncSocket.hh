@@ -22,6 +22,11 @@ class SctpAsyncSocket :
     public interface::AsyncSenderSocket
 {
   public:
+    SctpAsyncSocket(const SctpAsyncSocket &) = delete;
+    SctpAsyncSocket(SctpAsyncSocket &&) = delete;
+    SctpAsyncSocket &operator=(const SctpAsyncSocket &) = delete;
+    SctpAsyncSocket &operator=(SctpAsyncSocket &&) = delete;
+
     SctpAsyncSocket();
     virtual ~SctpAsyncSocket();
 
@@ -38,5 +43,8 @@ class SctpAsyncSocket :
     boost::asio::io_context ioContext_;
     boost::asio::basic_socket_acceptor<Protocol> acceptor_;
     Protocol::socket socket_;
+
+    void selectSctpProtocolForAcceptor();
+    bool closeConnectionOnBothSides();
 };
 } // namespace honeybadger::communication::network

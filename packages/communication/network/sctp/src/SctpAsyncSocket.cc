@@ -50,87 +50,85 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
 
 namespace honeybadger::communication::network
 {
+SctpAsyncSocket::~SctpAsyncSocket()
+{
+    closeConnectionOnBothSides();
+}
+
 SctpAsyncSocket::SctpAsyncSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 {
-    acceptor_.open({AF_INET, IPPROTO_SCTP});
 }
 
 bool SctpAsyncSocket::bind(const common::types::Endpoint &endpoint)
+try
 {
-    try
-    {
-        DEBUG_LOG("SCTP socket bind to {}:{}", endpoint.ip, endpoint.port);
-        const auto streamProtocolEndpoint = buildAsioEndpoint<Protocol::endpoint>(endpoint);
-        acceptor_.bind(streamProtocolEndpoint);
-    }
-    catch(const boost::system::system_error &error)
-    {
-        WARN_LOG("SCTP socket bind to {}:{} failed: {}", endpoint.ip, endpoint.port, error.what());
-        return false;
-    }
-    catch(const std::exception &error)
-    {
-        WARN_LOG("SCTP socket bind to {}:{} failed: {}", endpoint.ip, endpoint.port, error.what());
-        return false;
-    }
-    catch(...)
-    {
-        WARN_LOG("SCTP socket bind to {}:{} failed: unknown error", endpoint.ip, endpoint.port);
-        return false;
-    }
+    DEBUG_LOG("SCTP socket bind to {}:{}", endpoint.ip, endpoint.port);
+    const auto streamProtocolEndpoint = buildAsioEndpoint<Protocol::endpoint>(endpoint);
+    acceptor_.bind(streamProtocolEndpoint);
     return true;
+}
+catch(const boost::system::system_error &error)
+{
+    WARN_LOG("SCTP socket bind to {}:{} failed: {}", endpoint.ip, endpoint.port, error.what());
+    return false;
+}
+catch(const std::exception &error)
+{
+    WARN_LOG("SCTP socket bind to {}:{} failed: {}", endpoint.ip, endpoint.port, error.what());
+    return false;
+}
+catch(...)
+{
+    WARN_LOG("SCTP socket bind to {}:{} failed: unknown error", endpoint.ip, endpoint.port);
+    return false;
 }
 
 bool SctpAsyncSocket::listen()
+try
 {
     const auto maxListenConnections = Protocol::socket::max_listen_connections;
     DEBUG_LOG("SCTP socket listen with max connections: {}", maxListenConnections);
-    try
-    {
-        acceptor_.listen(maxListenConnections);
-        INFO_LOG("SCTP socket listen");
-    }
-    catch(const boost::system::system_error &error)
-    {
-        WARN_LOG("SCTP socket listen failed: {}", error.what());
-        return false;
-    }
-    catch(const std::exception &error)
-    {
-        WARN_LOG("SCTP socket listen failed: {}", error.what());
-        return false;
-    }
-    catch(...)
-    {
-        WARN_LOG("SCTP socket listen failed: unknown error");
-        return false;
-    }
+    acceptor_.listen(maxListenConnections);
+    INFO_LOG("SCTP socket listen");
     return true;
+}
+catch(const boost::system::system_error &error)
+{
+    WARN_LOG("SCTP socket listen failed: {}", error.what());
+    return false;
+}
+catch(const std::exception &error)
+{
+    WARN_LOG("SCTP socket listen failed: {}", error.what());
+    return false;
+}
+catch(...)
+{
+    WARN_LOG("SCTP socket listen failed: unknown error");
+    return false;
 }
 
 bool SctpAsyncSocket::accept()
+try
 {
-    try
-    {
-        // acceptor_.async_accept();
-        INFO_LOG("SCTP socket accepted new connection");
-        return true;
-    }
-    catch(const boost::system::system_error &error)
-    {
-        WARN_LOG("SCTP socket accept failed: {}", error.what());
-        return false;
-    }
-    catch(const std::exception &error)
-    {
-        WARN_LOG("SCTP socket accept failed: {}", error.what());
-        return false;
-    }
-    catch(...)
-    {
-        WARN_LOG("SCTP socket accept failed: unknown error");
-        return false;
-    }
+    // acceptor_.async_accept();
+    INFO_LOG("SCTP socket accepted new connection");
+    return true;
+}
+catch(const boost::system::system_error &error)
+{
+    WARN_LOG("SCTP socket accept failed: {}", error.what());
+    return false;
+}
+catch(const std::exception &error)
+{
+    WARN_LOG("SCTP socket accept failed: {}", error.what());
+    return false;
+}
+catch(...)
+{
+    WARN_LOG("SCTP socket accept failed: unknown error");
+    return false;
 }
 
 // void Sctp::acceptHandler(boost::system::error_code ec, Protocol::socket)
@@ -159,10 +157,20 @@ bool SctpAsyncSocket::accept()
 
 bool SctpAsyncSocket::close()
 {
+    return closeConnectionOnBothSides();
+}
+
+void SctpAsyncSocket::selectSctpProtocolForAcceptor()
+{
+    acceptor_.open({AF_INET, IPPROTO_SCTP});
+}
+
+bool SctpAsyncSocket::closeConnectionOnBothSides()
+{
     try
     {
+        socket_.shutdown(Protocol::socket::shutdown_both);
         acceptor_.close();
-        socket_.close();
         INFO_LOG("SCTP closed");
     }
     catch(const boost::system::system_error &error)

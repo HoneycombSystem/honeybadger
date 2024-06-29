@@ -10,16 +10,17 @@
 #else
     #error SCTP implementation for this system is missing
 #endif
-#include <boost/asio.hpp>
 #include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/network/Logger.hh"
+#include <boost/asio.hpp>
 
 namespace
 {
 template<typename ProtocolEndpoint>
 ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &endpoint)
 {
-    auto protocolEndpointBuilder = [](auto &sockaddrIn) {
+    auto protocolEndpointBuilder = [](auto &sockaddrIn)
+    {
         return ProtocolEndpoint{
             reinterpret_cast<sockaddr *>(&sockaddrIn),
             sizeof(sockaddrIn),
@@ -46,6 +47,7 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
     }
 }
 } // namespace
+
 namespace honeybadger::communication::network
 {
 SctpAsyncSocket::SctpAsyncSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)

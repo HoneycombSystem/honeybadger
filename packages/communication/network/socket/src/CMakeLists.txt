@@ -3,7 +3,8 @@ project(
   VERSION 0.1.0
   LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} INTERFACE)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCE)
+add_library(${PROJECT_NAME} ${SOURCE})
 add_library(${CMAKE_PROJECT_NAME}::${PACKAGE_NAME}::${MODULE_NAME}::${COMPONENT_NAME} ALIAS ${PROJECT_NAME})
 
 set_target_properties(
@@ -18,5 +19,10 @@ set_target_properties(
              CXX_EXTENSIONS OFF
              CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE honeybadger::common::types)
-target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_compile_options(
+  ${PROJECT_NAME}
+  PRIVATE $<$<CXX_COMPILER_ID:CXX,GNU>:$<$<CONFIG:Release>:${GCC_FLAGS_RELEASE}>>
+  PRIVATE $<$<CXX_COMPILER_ID:CXX,GNU>:$<$<CONFIG:Debug>:${GCC_FLAGS_DEBUG}>>)

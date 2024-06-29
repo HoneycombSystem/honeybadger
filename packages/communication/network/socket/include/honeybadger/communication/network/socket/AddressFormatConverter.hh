@@ -15,9 +15,6 @@ struct Endpoint;
 
 namespace honeybadger::communication::network
 {
-    struct AddressFormatConverter
-    {
-        sockaddr_in convertEndpointToSockaddrIn(const common::types::Endpoint &) const;
-        sockaddr_in6 convertEndpointToSockaddrIn6(const common::types::Endpoint &) const;
-};
+sockaddr_in convertEndpointToSockaddrIn(const common::types::Endpoint &);
+sockaddr_in6 convertEndpointToSockaddrIn6(const common::types::Endpoint &);
 }

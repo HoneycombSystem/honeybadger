@@ -1,12 +1,11 @@
 #include "honeybadger/communication/network/sctp/SctpAsyncSocket.hh"
+#include "honeybadger/communication/network/socket/AddressFormatConverter.hh"
 #include <memory>
 #ifdef __linux__
     #include <arpa/inet.h>
     #include <linux/sctp.h>
     #include <netinet/in.h>
 #elif _WIN32
-    #include <winsock2.h>
-    #include <ws2tcpip.h>
     #warning SCTP implementation for Windows is missing
 #else
     #error SCTP implementation for this system is missing
@@ -17,24 +16,6 @@
 
 namespace
 {
-sockaddr_in prepareSockaddrIn(const honeybadger::common::types::Endpoint &endpoint)
-{
-    sockaddr_in sockaddrIn;
-    sockaddrIn.sin_family = AF_INET;
-    sockaddrIn.sin_addr.s_addr = inet_addr(endpoint.ip);
-    sockaddrIn.sin_port = htons(endpoint.port);
-    return sockaddrIn;
-}
-
-sockaddr_in6 prepareSockaddrIn6(const honeybadger::common::types::Endpoint &endpoint)
-{
-    sockaddr_in6 sockaddrIn6;
-    sockaddrIn6.sin6_family = AF_INET6;
-    sockaddrIn6.sin6_port = htons(endpoint.port);
-    inet_pton(AF_INET6, endpoint.ip, &sockaddrIn6.sin6_addr);
-    return sockaddrIn6;
-}
-
 template<typename ProtocolEndpoint>
 ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &endpoint)
 {
@@ -47,23 +28,24 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
     };
     switch(endpoint.ipVersion)
     {
-        case honeybadger::common::types::Endpoint::IpVersion::v4:
+        using namespace honeybadger::communication::network;
+        using enum honeybadger::common::types::Endpoint::IpVersion;
+        case v4:
         {
-            auto sockaddrIn = prepareSockaddrIn(endpoint);
+            auto sockaddrIn = convertEndpointToSockaddrIn(endpoint);
             return protocolEndpointBuilder(sockaddrIn);
         }
-        case honeybadger::common::types::Endpoint::IpVersion::v6:
+        case v6:
         {
-            auto sockaddrIn6 = prepareSockaddrIn6(endpoint);
+            auto sockaddrIn6 = convertEndpointToSockaddrIn6(endpoint);
             return protocolEndpointBuilder(sockaddrIn6);
         }
-        case honeybadger::common::types::Endpoint::IpVersion::unknown:
+        case unknown:
         default:
             throw std::runtime_error("Unknown IP version");
     }
 }
 } // namespace
-
 namespace honeybadger::communication::network
 {
 SctpAsyncSocket::SctpAsyncSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)

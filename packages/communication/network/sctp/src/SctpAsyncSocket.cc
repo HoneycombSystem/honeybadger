@@ -57,6 +57,7 @@ SctpAsyncSocket::~SctpAsyncSocket()
 
 SctpAsyncSocket::SctpAsyncSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 {
+    selectSctpProtocolForAcceptor();
 }
 
 bool SctpAsyncSocket::bind(const common::types::Endpoint &endpoint)

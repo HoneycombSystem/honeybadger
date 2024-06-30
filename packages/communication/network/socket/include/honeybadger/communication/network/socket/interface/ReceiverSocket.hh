@@ -2,9 +2,9 @@
 
 namespace honeybadger::communication::network::interface
 {
-struct AsyncReceiverSocket
+struct ReceiverSocket
 {
-    virtual ~AsyncReceiverSocket() = default;
+    virtual ~ReceiverSocket() = default;
     virtual void receive() = 0;
 };
 } // namespace honeybadger::communication::network::interface

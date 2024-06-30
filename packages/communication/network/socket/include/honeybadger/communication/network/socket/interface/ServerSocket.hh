@@ -7,9 +7,11 @@ class Endpoint;
 
 namespace honeybadger::communication::network::interface
 {
-struct AsyncClientSocket
+struct ServerSocket
 {
-    virtual ~AsyncClientSocket() = default;
-    virtual bool connect(const common::types::Endpoint &) = 0;
+    virtual ~ServerSocket() = default;
+    virtual bool bind(const common::types::Endpoint &) = 0;
+    virtual bool listen() = 0;
+    virtual bool accept() = 0;
 };
 } // namespace honeybadger::communication::network::interface

@@ -1,8 +1,8 @@
 #pragma once
-#include "honeybadger/communication/network/socket/interface/AsyncClientSocket.hh"
-#include "honeybadger/communication/network/socket/interface/AsyncReceiverSocket.hh"
-#include "honeybadger/communication/network/socket/interface/AsyncSenderSocket.hh"
-#include "honeybadger/communication/network/socket/interface/AsyncServerSocket.hh"
+#include "honeybadger/communication/network/socket/interface/ClientSocket.hh"
+#include "honeybadger/communication/network/socket/interface/ReceiverSocket.hh"
+#include "honeybadger/communication/network/socket/interface/SenderSocket.hh"
+#include "honeybadger/communication/network/socket/interface/ServerSocket.hh"
 #include "honeybadger/communication/network/socket/interface/CloseableSocket.hh"
 #include <boost/asio.hpp>
 
@@ -16,10 +16,10 @@ namespace honeybadger::communication::network
 {
 class SctpAsyncSocket :
     public interface::CloseableSocket,
-    public interface::AsyncServerSocket,
-    public interface::AsyncClientSocket,
-    public interface::AsyncReceiverSocket,
-    public interface::AsyncSenderSocket
+    public interface::ServerSocket,
+    public interface::ClientSocket,
+    public interface::ReceiverSocket,
+    public interface::SenderSocket
 {
   public:
     SctpAsyncSocket(const SctpAsyncSocket &) = delete;

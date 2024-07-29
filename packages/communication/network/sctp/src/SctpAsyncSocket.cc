@@ -109,11 +109,27 @@ catch(...)
     return false;
 }
 
-bool SctpAsyncSocket::accept()
+bool SctpAsyncSocket::asyncAccept()
 try
 {
     // acceptor_.async_accept();
-    INFO_LOG("SCTP socket accepted new connection");
+    INFO_LOG("SCTP socket start accepting connections");
+        acceptor_.async_accept(socket_,
+                               [this](boost::system::error_code ec)
+        {
+            //accept handler which will be called when new connection is accepted, add connection to the list of connections and start receiving data
+            if(ec)
+            {
+                WARN_LOG("SCTP socket accept failed: {}", ec.message());
+                return;
+            }
+
+            DEBUG_LOG("SCTP socket accepted new connection");
+
+            // auto session = std::make_shared<Client>(std::move(socket_));
+            //show a Client implementation
+            // session->run();
+        });
     return true;
 }
 catch(const boost::system::system_error &error)

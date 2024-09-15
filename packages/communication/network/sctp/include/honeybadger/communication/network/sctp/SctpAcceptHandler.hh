@@ -1,13 +1,13 @@
-#pragma once
+// #pragma once
 
-namespace honeybadger::communication::network
-{
-class SctpAcceptHandler
-{
-  public:
-    SctpAcceptHandler() = default;
-    virtual ~SctpAcceptHandler() = default;
+// namespace honeybadger::communication::network
+// {
+// class SctpAcceptHandler
+// {
+//   public:
+//     SctpAcceptHandler() = default;
+//     virtual ~SctpAcceptHandler() = default;
 
-    virtual void onAccept() = 0;
-};
-} // namespace honeybadger::communication::network
+//     virtual void onAccept() = 0;
+// };
+// } // namespace honeybadger::communication::network

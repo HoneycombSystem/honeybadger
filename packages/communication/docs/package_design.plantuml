@@ -59,13 +59,14 @@ package communication {
         }
         class ApplicationProtocol implements CommunicationProtocol
         class ControlProtocol implements CommunicationProtocol
-        class TelemetryProtoco implements CommunicationProtocol
-
+        class DataHubProtocol implements CommunicationProtocol
+        class TelemetryProtocol implements CommunicationProtocol
         interface CommunicationProtocolFactory{
             +create():CommunicationProtocol
         }
         class ApplicationProtocolFaconry implements CommunicationProtocolFactory
         class ControlProtocolFaconry implements CommunicationProtocolFactory
+        class DataHubProtocol implements CommunicationProtocolFactory
         class TelemetryProtocolFactory implements CommunicationProtocolFactory
 
         CommunicationProtocolFactory *-- CommunicationProtocol

@@ -1,19 +1,11 @@
 #pragma once
-#include <boost/asio/awaitable.hpp>
+#include <coroutine>
 
 namespace honeybadger::common::coroutines
-  {
-    template<typename T>
+{
+template<typename T>
 class Task
 {
-public:
-    using AwaitableType = boost::asio::awaitable<T>;
-
-    Task(AwaitableType awaitable) : awaitable_(std::move(awaitable)) {}
-
-    AwaitableType get_awaitable() { return std::move(awaitable_); }
-
-private:
-    AwaitableType awaitable_;
 };
-  }
+class Task<int>;
+} // namespace honeybadger::common::coroutines

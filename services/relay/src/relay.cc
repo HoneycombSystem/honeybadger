@@ -1,10 +1,10 @@
-#include "honeybadger/communication/broker/application_protocol_broker/ApplicationProtocolBrokerFactory.hh"
+#include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolServerFactory.hh"
 
 int main()
 {
-    using namespace honeybadger::communication::broker;
-    // auto applicationProtocolBroker =
-    //     ApplicationProtocolBrokerFactory(honeybadger::common::types::Endpoint("127.0.0.1", 9898)).create();
-    // applicationProtocolBroker->run();
+    using namespace honeybadger::communication::server;
+    auto applicationProtocolServer =
+        ApplicationProtocolServerFactory(honeybadger::common::types::Endpoint("127.0.0.1", 9898)).create();
+    applicationProtocolServer->start();
     return 0;
 }

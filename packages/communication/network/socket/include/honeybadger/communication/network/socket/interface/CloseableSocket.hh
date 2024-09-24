@@ -5,6 +5,7 @@ namespace honeybadger::communication::network::interface
 struct CloseableSocket
 {
     virtual ~CloseableSocket() = default;
-    virtual bool close() = 0;
+    virtual void close() = 0;
+    virtual bool isClosed() const = 0;
 };
 } // namespace honeybadger::communication::network::interface

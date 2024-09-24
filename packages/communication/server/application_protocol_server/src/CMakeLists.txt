@@ -19,6 +19,15 @@ set_target_properties(
              CXX_EXTENSIONS OFF
              CXX_STANDARD_REQUIRED ON)
 
+add_logger(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::network)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::server)
+
+find_package(Boost 1.83.0 QUIET REQUIRED COMPONENTS system)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::system)
+target_link_libraries(${PROJECT_NAME} PRIVATE $<$<BOOL:${WIN32}>:ws2_32>)
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_compile_options(
   ${PROJECT_NAME}

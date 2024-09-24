@@ -10,14 +10,14 @@ package communication {
         interface BrokerFactory{
             +create():Broker
         }
-        class ApplicationProtocolBrokerFactory implements BrokerFactory
+        class ApplicationProtocolServerFactory implements BrokerFactory
         class ControlProtocolBrokerFactory implements BrokerFactory
 
         interface Broker{
             +start():void
             +stop():void
         }
-        class ApplicationProtocolBroker implements Broker
+        class ApplicationProtocolServer implements Broker
         class ControlProtocolBroker implements Broker
 
         BrokerFactory *-- Broker

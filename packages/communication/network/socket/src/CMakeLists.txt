@@ -20,6 +20,7 @@ set_target_properties(
              CXX_STANDARD_REQUIRED ON)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::coroutines)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_compile_options(

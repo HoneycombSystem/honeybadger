@@ -117,8 +117,8 @@
 //         acceptor_.async_accept(socket_,
 //                                [this](boost::system::error_code ec)
 //         {
-//             //accept handler which will be called when new connection is accepted, add connection to the list of connections and start receiving data
-//             if(ec)
+//             //accept handler which will be called when new connection is accepted, add connection to the list of
+//             connections and start receiving data if(ec)
 //             {
 //                 WARN_LOG("SCTP socket accept failed: {}", ec.message());
 //                 return;

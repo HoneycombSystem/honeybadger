@@ -1,114 +1,64 @@
 @startuml package design
-package common{
-    package types{
-        class Uuid
-    }
-}
 
 package communication {
-    component broker {
-        interface BrokerFactory{
-            +create():Broker
-        }
-        class ApplicationProtocolServerFactory implements BrokerFactory
-        class ControlProtocolBrokerFactory implements BrokerFactory
+    component protocols {
+        interface ProtocolService
+        interface ProtocolServiceFactory
+        interface Protocol
+        interface ProtocolFactory
+        interface ProtocolServer
+        interface ProtocolServerFactory
 
-        interface Broker{
-            +start():void
-            +stop():void
-        }
-        class ApplicationProtocolServer implements Broker
-        class ControlProtocolBroker implements Broker
+        interface MessageQueue
 
-        BrokerFactory *-- Broker
+        ProtocolServiceFactory *-- ProtocolService
+        ProtocolFactory *-- Protocol
+        ProtocolServerFactory *-- ProtocolServer
+
+        ProtocolService o-- Protocol
+        Protocol o-- ProtocolServer
     }
-    component procedure {
-        interface ProcedureBuilder{
-            +build():Procedure
-            +onMessage(Message):ProcedureBuilder
-            +when(Message):ProcedureBuilder
-            +then(Message):ProcedureBuilder
-            +setAsOptional():ProcedureBuilder
-            +setTimer(Timer):ProcedureBuilder
-        }
-        interface Procedure{
-            +clientId():Uuid
-            +start():void
-            +break():void
-        }
-        class Message
-        interface MessageQueueWriter{
-            +push(Message):void
-        }
-        interface MessageQueue extends MessageQueueWriter{
-            +pop():void
-        }
-        interface MessageDispatcher{
-            +start():void
-        }
-        MessageDispatcher o-- MessageQueue
-
-        interface MessageCollector{
-            +collect(Payload):void
-        }
-    }
-    component protocol {
-        interface CommunicationProtocol{
-            +run():void
-            +stop():void
-        }
-        class ApplicationProtocol implements CommunicationProtocol
-        class ControlProtocol implements CommunicationProtocol
-        class DataHubProtocol implements CommunicationProtocol
-        class TelemetryProtocol implements CommunicationProtocol
-        interface CommunicationProtocolFactory{
-            +create():CommunicationProtocol
-        }
-        class ApplicationProtocolFaconry implements CommunicationProtocolFactory
-        class ControlProtocolFaconry implements CommunicationProtocolFactory
-        class DataHubProtocol implements CommunicationProtocolFactory
-        class TelemetryProtocolFactory implements CommunicationProtocolFactory
-
-        CommunicationProtocolFactory *-- CommunicationProtocol
-    }
-    CommunicationProtocolFactory *-- BrokerFactoryq
-
     component network {
-        interface Server{
-            +run():void
-            +stop():void
+        interface CloseableSocket {
+            +close(): bool
+        }
+        interface ReceiverSocket {
+            +receive(): Payload
+        }
+        interface SenderSocket {
+            +send(payload: Payload): size_t
+        }
+        interface ServerSocket {
+            +accept(): ConnectedSocket
+            +bind(endpoint: Endpoint): bool
+            +listen(): bool
+        }
+        interface ConnectedSocket
+
+        CloseableSocket <|-- ServerSocket
+
+        CloseableSocket <|-- ConnectedSocket
+        ReceiverSocket <|-- ConnectedSocket
+        SenderSocket <|-- ConnectedSocket
+    }
+    component server {
+        interface Connection {
+            +close(): bool
+            +send(payload: Payload): void
+        }
+        interface Server
+        interface ServerFactory {
+            +create(): Server
+        }
+        interface DataLink {
+            +push(payload: Payload): bool
         }
 
-        interface Client{
-            +getIdentifier():Uuid
-            +send(bytes):void
-            +receive():bytes
-        }
-
-        interface ClientBuilder{
-            +build():Client
-            +setIdentifier():ClientBuilder
-            +setSocket(Socket):ClientBuilder
-            +setSendCallback(sendCallback):ClientBuilder
-            +setReceiveCallback(receiveCallback):ClientBuilder
-        }
-
-        interface ServerSocket{
-            +accept():Client
-            +close():void
-            +bind():void
-            +listen():void
-        }
-
-        interface SctpServerFactory{
-            +create():Server
-        }
-
+        ServerFactory *-- Server
         Server o-- ServerSocket
-        ServerSocket o-- Client
-        SctpServerFactory *-- Server
+        Connection o-- ConnectedSocket
 
-        Broker o-- Server
+        Server o-- ProtocolServer
     }
 }
 @endstartuml

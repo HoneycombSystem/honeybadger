@@ -12,7 +12,7 @@ class SctpServerSocket : public interface::ServerSocket
     ~SctpServerSocket();
     bool bind(const common::types::Endpoint &) override;
     bool listen() override;
-    common::coroutines::Task<void> accept() override;
+    common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> accept() override;
     void close() override;
     bool isClosed() const override;
 };

@@ -16,6 +16,6 @@ struct ServerSocket : public CloseableSocket
     virtual ~ServerSocket() = default;
     virtual bool bind(const common::types::Endpoint &) = 0;
     virtual bool listen() = 0;
-    virtual common::coroutines::Task<void> accept() = 0;
+    virtual common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> accept() = 0;
 };
 } // namespace honeybadger::communication::network::interface

@@ -21,11 +21,11 @@ bool SctpServerSocket::listen()
 }
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch-default"
+#pragma GCC diagnostic ignored "-Wswitch-default" // problem with boost::asio::awaitable
 
-common::coroutines::Task<void> SctpServerSocket::accept()
+common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> SctpServerSocket::accept()
 {
-    co_return;
+    co_return nullptr;
 }
 
 #pragma GCC diagnostic pop

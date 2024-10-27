@@ -1,12 +1,17 @@
 #pragma once
-#include "honeybadger/communication/protocols/application_protocol/interface/ApplicationProtocolServiceFactory.hh"
+#include "honeybadger/common/types/network/Endpoint.hh"
+#include "honeybadger/communication/protocols/protocols/interface/ProtocolServiceFactory.hh"
+#include <memory>
 
 namespace honeybadger::communication::protocols
 {
-class ApplicationProtocolServiceFactory : public interface::ApplicationProtocolServiceFactory
+class ApplicationProtocolServiceFactory : public interface::ProtocolServiceFactory
 {
   public:
-    ApplicationProtocolServiceFactory();
-    std::unique_ptr<interface::ApplicationProtocolService> create() override;
+    ApplicationProtocolServiceFactory(const honeybadger::common::types::Endpoint &);
+    std::unique_ptr<interface::ProtocolService> create() override;
+
+  private:
+    honeybadger::common::types::Endpoint endpoint_;
 };
 } // namespace honeybadger::communication::protocols

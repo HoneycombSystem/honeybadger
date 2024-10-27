@@ -14,7 +14,7 @@
 
 // namespace honeybadger::communication::network
 // {
-// class SctpAsyncSocket :
+// class SctpSocket :
 //     public interface::CloseableSocket,
 //     public interface::ServerSocket,
 //     public interface::ClientSocket,
@@ -22,13 +22,13 @@
 //     public interface::SenderSocket
 // {
 //   public:
-//     SctpAsyncSocket(const SctpAsyncSocket &) = delete;
-//     SctpAsyncSocket(SctpAsyncSocket &&) = delete;
-//     SctpAsyncSocket &operator=(const SctpAsyncSocket &) = delete;
-//     SctpAsyncSocket &operator=(SctpAsyncSocket &&) = delete;
+//     SctpSocket(const SctpSocket &) = delete;
+//     SctpSocket(SctpSocket &&) = delete;
+//     SctpSocket &operator=(const SctpSocket &) = delete;
+//     SctpSocket &operator=(SctpSocket &&) = delete;
 
-//     SctpAsyncSocket();
-//     virtual ~SctpAsyncSocket();
+//     SctpSocket();
+//     virtual ~SctpSocket();
 
 //     bool bind(const common::types::Endpoint &) override;
 //     bool listen() override;

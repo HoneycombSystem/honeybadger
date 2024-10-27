@@ -1,4 +1,4 @@
-set(COMPONENT_NAME "strong_type")
+set(COMPONENT_NAME "protocols_interface")
 project(
   ${MODULE_NAME}_${COMPONENT_NAME}
   VERSION 0.1.0

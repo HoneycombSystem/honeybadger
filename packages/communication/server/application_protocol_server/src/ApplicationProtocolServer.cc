@@ -3,7 +3,7 @@
 namespace honeybadger::communication::server
 {
 ApplicationProtocolServer::ApplicationProtocolServer(
-    std::unique_ptr<network::interface::AsyncServerSocket> asyncServerSocket) :
+    std::unique_ptr<network::interface::ServerSocket> asyncServerSocket) :
     asyncServerSocket_(std::move(asyncServerSocket))
 {
 }

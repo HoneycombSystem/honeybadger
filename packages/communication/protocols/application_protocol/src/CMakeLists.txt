@@ -15,16 +15,19 @@ set_target_properties(
              ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
              LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
              RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-             CXX_STANDARD 20
+             CXX_STANDARD 23
              CXX_EXTENSIONS OFF
              CXX_STANDARD_REQUIRED ON)
 
 add_logger(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::network)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::server)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::protocols)
 
-find_package(Boost 1.83.0 QUIET REQUIRED COMPONENTS system)
+find_package(Boost 1.86 QUIET REQUIRED COMPONENTS system)
 target_link_libraries(${PROJECT_NAME} PRIVATE Boost::system)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE $<$<BOOL:${WIN32}>:ws2_32>)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)

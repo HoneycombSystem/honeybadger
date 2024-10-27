@@ -57,7 +57,6 @@ package communication {
         ServerFactory *-- Server
         Server o-- ServerSocket
         Connection o-- ConnectedSocket
-
         Server o-- ProtocolServer
     }
 }

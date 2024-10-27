@@ -1,0 +1,17 @@
+#include "honeybadger/communication/protocols/application_protocol/ApplicationProtocol.hh"
+
+namespace honeybadger::communication::protocols
+{
+ApplicationProtocol::ApplicationProtocol(std::unique_ptr<interface::ProtocolServer> protocolServer) :
+    protocolServer_(std::move(protocolServer))
+{
+}
+
+void ApplicationProtocol::run()
+{
+}
+
+void ApplicationProtocol::onMessage()
+{
+}
+} // namespace honeybadger::communication::protocols

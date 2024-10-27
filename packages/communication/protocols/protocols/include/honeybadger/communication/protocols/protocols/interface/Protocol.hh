@@ -2,10 +2,10 @@
 
 namespace honeybadger::communication::protocols::interface
 {
-class ApplicationProtocol
+class Protocol
 {
   public:
-    virtual ~ApplicationProtocol() = default;
+    virtual ~Protocol() = default;
     virtual void run() = 0;
     virtual void onMessage() = 0;
 };

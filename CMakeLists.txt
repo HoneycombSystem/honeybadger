@@ -43,6 +43,10 @@ include(enable_tests)
 include(gcc_flags)
 include(enable_export_symbols)
 
+# Helpers for external libraries linking
+include(external_libs/add_boost)
+include(external_libs/add_gtest)
+
 # These subdirectories must be included at the end
 add_subdirectory(packages)
 add_subdirectory(services)

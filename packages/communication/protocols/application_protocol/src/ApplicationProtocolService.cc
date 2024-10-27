@@ -2,7 +2,8 @@
 
 namespace honeybadger::communication::protocols
 {
-ApplicationProtocolService::ApplicationProtocolService()
+ApplicationProtocolService::ApplicationProtocolService(std::unique_ptr<interface::Protocol> applicationProtocol) :
+    applicationProtocol_(std::move(applicationProtocol))
 {
 }
 

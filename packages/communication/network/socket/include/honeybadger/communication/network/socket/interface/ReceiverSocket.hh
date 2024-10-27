@@ -2,14 +2,14 @@
 
 namespace honeybadger::common::types
 {
-class Endpoint;
+class Payload;
 } // namespace honeybadger::common::types
 
 namespace honeybadger::communication::network::interface
 {
-struct ClientSocket
+struct ReceiverSocket
 {
-    virtual ~ClientSocket() = default;
-    virtual bool connect(const common::types::Endpoint &) = 0;
+    virtual ~ReceiverSocket() = default;
+    virtual common::types::Payload receive() = 0;
 };
 } // namespace honeybadger::communication::network::interface

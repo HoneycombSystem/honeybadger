@@ -1,4 +1,4 @@
-// #include "honeybadger/communication/network/sctp/SctpAsyncSocket.hh"
+// #include "honeybadger/communication/network/sctp/SctpSocket.hh"
 // #include "honeybadger/communication/network/socket/AddressFormatConverter.hh"
 // #include <memory>
 // #ifdef __linux__
@@ -50,17 +50,17 @@
 
 // namespace honeybadger::communication::network
 // {
-// SctpAsyncSocket::~SctpAsyncSocket()
+// SctpSocket::~SctpSocket()
 // {
 //     closeConnectionOnBothSides();
 // }
 
-// SctpAsyncSocket::SctpAsyncSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
+// SctpSocket::SctpSocket() : ioContext_(), acceptor_(ioContext_), socket_(ioContext_)
 // {
 //     selectSctpProtocolForAcceptor();
 // }
 
-// bool SctpAsyncSocket::bind(const common::types::Endpoint &endpoint)
+// bool SctpSocket::bind(const common::types::Endpoint &endpoint)
 // try
 // {
 //     DEBUG_LOG("SCTP socket bind to {}:{}", endpoint.ip, endpoint.port);
@@ -84,7 +84,7 @@
 //     return false;
 // }
 
-// bool SctpAsyncSocket::listen()
+// bool SctpSocket::listen()
 // try
 // {
 //     const auto maxListenConnections = Protocol::socket::max_listen_connections;
@@ -109,7 +109,7 @@
 //     return false;
 // }
 
-// bool SctpAsyncSocket::asyncAccept()
+// bool SctpSocket::asyncAccept()
 // try
 // {
 //     // acceptor_.async_accept();
@@ -172,17 +172,17 @@
 // //     });
 // // }
 
-// bool SctpAsyncSocket::close()
+// bool SctpSocket::close()
 // {
 //     return closeConnectionOnBothSides();
 // }
 
-// void SctpAsyncSocket::selectSctpProtocolForAcceptor()
+// void SctpSocket::selectSctpProtocolForAcceptor()
 // {
 //     acceptor_.open({AF_INET, IPPROTO_SCTP});
 // }
 
-// bool SctpAsyncSocket::closeConnectionOnBothSides()
+// bool SctpSocket::closeConnectionOnBothSides()
 // {
 //     try
 //     {

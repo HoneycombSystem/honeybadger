@@ -5,21 +5,21 @@ component socket {
         +close():bool
     }
 
-    interface AsyncReceiverSocket{
+    interface ReceiverSocket{
         +receive():void
     }
 
-    interface AsyncSenderSocket{
+    interface SenderSocket{
         +send(Payload):void
     }
 
-    interface AsyncServerSocket{
+    interface ServerSocket{
         +bind(Address):bool
         +listen():bool
         +accept():bool
     }
 
-    interface AsyncSocket extends CloseableSocket, AsyncServerSocket, AsyncSenderSocket, AsyncReceiverSocket
+    interface Socket extends CloseableSocket, ServerSocket, SenderSocket, ReceiverSocket
 }
 
 @endstartuml

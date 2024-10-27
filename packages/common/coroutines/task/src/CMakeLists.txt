@@ -15,9 +15,13 @@ set_target_properties(
              ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
              LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
              RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-             CXX_STANDARD 20
+             CXX_STANDARD 23
              CXX_EXTENSIONS OFF
              CXX_STANDARD_REQUIRED ON)
+
+set(REQUIRED_COMPONENTS system)
+set(LIBRARIES Boost::system)
+add_boost(${PROJECT_NAME} REQUIRED_COMPONENTS ${REQUIRED_COMPONENTS} LIBRARIES ${LIBRARIES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_compile_options(

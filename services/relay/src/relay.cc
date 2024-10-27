@@ -1,9 +1,11 @@
+#include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolServiceFactory.hh"
 
 int main()
 {
     using namespace honeybadger::communication::protocols;
-    auto applicationProtocolService = ApplicationProtocolServiceFactory().create();
+    const auto endpoint = honeybadger::common::types::Endpoint("0.0.0.0", 2137);
+    auto applicationProtocolService = ApplicationProtocolServiceFactory(endpoint).create();
     applicationProtocolService->start();
     return 0;
 }

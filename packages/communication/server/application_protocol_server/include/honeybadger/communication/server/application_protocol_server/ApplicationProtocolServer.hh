@@ -1,5 +1,5 @@
 #pragma once
-#include "honeybadger/communication/network/socket/interface/AsyncServerSocket.hh"
+#include "honeybadger/communication/network/socket/interface/ServerSocket.hh"
 #include "honeybadger/communication/server/server/interface/Server.hh"
 #include <memory>
 
@@ -8,10 +8,10 @@ namespace honeybadger::communication::server
 class ApplicationProtocolServer : public interface::Server
 {
   private:
-    std::unique_ptr<network::interface::AsyncServerSocket> asyncServerSocket_;
+    std::unique_ptr<network::interface::ServerSocket> asyncServerSocket_;
 
   public:
-    ApplicationProtocolServer(std::unique_ptr<network::interface::AsyncServerSocket>);
+    ApplicationProtocolServer(std::unique_ptr<network::interface::ServerSocket>);
     ~ApplicationProtocolServer();
     void start() override;
     void stop() override;

@@ -8,3 +8,6 @@ add_library(${CMAKE_PROJECT_NAME}::${PACKAGE_NAME}::${MODULE_NAME} ALIAS ${PROJE
 
 target_link_libraries(${PROJECT_NAME}
                       INTERFACE ${CMAKE_PROJECT_NAME}::${PACKAGE_NAME}::${MODULE_NAME}::application_protocol)
+
+target_link_libraries(${PROJECT_NAME}
+                      INTERFACE ${CMAKE_PROJECT_NAME}::${PACKAGE_NAME}::${MODULE_NAME}::protocols_interface)

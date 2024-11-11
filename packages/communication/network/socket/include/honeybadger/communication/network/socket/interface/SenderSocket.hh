@@ -1,15 +1,12 @@
 #pragma once
-
-namespace honeybadger::common::types
-{
-class Payload;
-} // namespace honeybadger::common::types
+#include "honeybadger/common/coroutines/task/Task.hh"
+#include "honeybadger/common/types/network/Payload.hh"
 
 namespace honeybadger::communication::network::interface
 {
 struct SenderSocket
 {
     virtual ~SenderSocket() = default;
-    virtual void send(const common::types::Payload &) = 0;
+    virtual common::coroutines::Task<void> send(const common::types::Payload &) = 0;
 };
 } // namespace honeybadger::communication::network::interface

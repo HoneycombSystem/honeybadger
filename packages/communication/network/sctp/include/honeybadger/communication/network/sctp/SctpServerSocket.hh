@@ -2,9 +2,12 @@
 #include "honeybadger/communication/network/socket/interface/ConnectedSocket.hh"
 #include "honeybadger/communication/network/socket/interface/ServerSocket.hh"
 #include <honeybadger/common/coroutines/task/Task.hh>
+#include <honeybadger/common/types/network/Endpoint.hh>
 
 namespace honeybadger::communication::network
 {
+class SctpSocket;
+
 class SctpServerSocket : public interface::ServerSocket
 {
   public:
@@ -15,5 +18,10 @@ class SctpServerSocket : public interface::ServerSocket
     common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> accept() override;
     void close() override;
     bool isClosed() const override;
+
+  private:
+    void closeSctpSocketAndResetPointer();
+    common::types::Endpoint endpoint_;
+    std::unique_ptr<SctpSocket> sctpSocket_;
 };
 } // namespace honeybadger::communication::network

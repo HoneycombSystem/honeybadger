@@ -9,5 +9,6 @@ ApplicationProtocolService::ApplicationProtocolService(std::unique_ptr<interface
 
 void ApplicationProtocolService::start()
 {
+    applicationProtocol_->run();
 }
 } // namespace honeybadger::communication::protocols

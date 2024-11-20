@@ -6,7 +6,7 @@ class Server
 {
   public:
     virtual ~Server() = default;
-    virtual void start() = 0;
+    virtual void run() = 0;
     virtual void stop() = 0;
 };
 } // namespace honeybadger::communication::server::interface

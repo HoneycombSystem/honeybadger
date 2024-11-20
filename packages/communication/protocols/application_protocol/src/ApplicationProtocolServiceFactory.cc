@@ -1,6 +1,7 @@
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolServiceFactory.hh"
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolFactory.hh"
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolService.hh"
+#include "honeybadger/communication/protocols/Logger.hh"
 
 namespace honeybadger::communication::protocols
 {
@@ -12,6 +13,7 @@ ApplicationProtocolServiceFactory::ApplicationProtocolServiceFactory(
 
 std::unique_ptr<interface::ProtocolService> ApplicationProtocolServiceFactory::create()
 {
+    TRACE_LOG("Creating ApplicationProtocolService with endpoint: ");
     auto applicationProtocol = ApplicationProtocolFactory(endpoint_).create();
     return std::make_unique<ApplicationProtocolService>(std::move(applicationProtocol));
 }

@@ -4,8 +4,8 @@
 
 namespace honeybadger::communication::network
 {
-SctpServerSocket::SctpServerSocket(const common::types::Endpoint &endpoint) :
-    endpoint_(endpoint), sctpSocket_(std::make_unique<SctpSocket>())
+SctpServerSocket::SctpServerSocket() :
+    sctpSocket_(std::make_unique<SctpSocket>())
 {
 }
 
@@ -14,14 +14,16 @@ SctpServerSocket::~SctpServerSocket()
     closeSctpSocketAndResetPointer();
 }
 
-bool SctpServerSocket::bind(const common::types::Endpoint &)
+bool SctpServerSocket::bind(const common::types::Endpoint &endpoint)
 {
-    return sctpSocket_->bind(endpoint_);
+    return sctpSocket_->bind(endpoint);
 }
 
 bool SctpServerSocket::listen()
 {
-    return sctpSocket_->listen();
+    sctpSocket_->listen();
+    sctpSocket_->startloop();
+    return true;
 }
 
 DISABLE_SWITCH_DEFAULT_WARNING_DUE_TO_BOOST_COROUTINES

@@ -1,4 +1,3 @@
-#include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolServiceFactory.hh"
 
 int main()

@@ -1,7 +1,6 @@
 #pragma once
 #include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/protocols/protocols/interface/ProtocolServiceFactory.hh"
-#include <memory>
 
 namespace honeybadger::communication::protocols
 {

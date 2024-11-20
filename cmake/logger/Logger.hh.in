@@ -9,7 +9,7 @@
 #include <spdlog/async.h>
 #include <spdlog/cfg/env.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 
 namespace honeybadger::@PACKAGE_NAME@::@MODULE_NAME@
@@ -48,9 +48,9 @@ class Logger
                                                                                      fileSinkForMODULE,
                                                                                      fileSink},
                                                              threadPool);
-            logger_->set_pattern("[%Y-%m-%dT%T.%eZ] [%n] [%l] [%P:%t] %s:%# %v",
+            logger_->set_pattern("[%Y-%m-%dT%T.%FZ] [%n] [%l] [%P:%t] %s:%# %v",
                                  spdlog::pattern_time_type::utc);
-            colorConsoleSink->set_pattern("[%T.%eZ] [%^%L%$]: %v");
+            colorConsoleSink->set_pattern("[%T.%FZ] [%^%L%$]: %v");
             spdlog::register_logger(logger_);
         }
         logger_->flush_on(spdlog::level::warn);

@@ -14,7 +14,7 @@ class ConnectedSocket : public interface::ConnectedSocket
     bool isClosed() const override;
     common::coroutines::Task<void> send(const common::types::Payload &) override;
     common::coroutines::Task<common::types::Payload> receive() override;
-
+    common::coroutines::Task<void> run() override;
   private:
     void closeSctpSocketAndResetPointer();
     std::shared_ptr<SctpSocket> sctpSocket_;

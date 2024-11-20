@@ -11,9 +11,9 @@ class ApplicationProtocolServer : public interface::Server
     std::unique_ptr<network::interface::ServerSocket> asyncServerSocket_;
 
   public:
-    ApplicationProtocolServer(std::unique_ptr<network::interface::ServerSocket>);
+    ApplicationProtocolServer(std::unique_ptr<network::interface::ServerSocket>, const common::types::Endpoint &);
     ~ApplicationProtocolServer();
-    void start() override;
+    void run() override;
     void stop() override;
 };
 } // namespace honeybadger::communication::server

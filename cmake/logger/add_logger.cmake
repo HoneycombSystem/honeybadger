@@ -1,8 +1,8 @@
-function(add_logger project_name)
+function(add_logger PROJECT_NAME)
   find_package(spdlog QUIET REQUIRED)
   find_package(fmt QUIET REQUIRED)
   configure_file("${CMAKE_SOURCE_DIR}/cmake/logger/Logger.hh.in"
                  "${CMAKE_CURRENT_SOURCE_DIR}/../include/honeybadger/${PACKAGE_NAME}/${MODULE_NAME}/Logger.hh")
-  target_link_libraries(${project_name} PRIVATE spdlog::spdlog)
-  target_link_libraries(${project_name} PRIVATE fmt::fmt)
+  target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+  target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
 endfunction()

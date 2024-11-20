@@ -9,6 +9,7 @@ ApplicationProtocol::ApplicationProtocol(std::unique_ptr<interface::ProtocolServ
 
 void ApplicationProtocol::run()
 {
+    protocolServer_->run();
 }
 
 void ApplicationProtocol::onMessage()

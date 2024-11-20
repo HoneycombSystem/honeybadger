@@ -14,8 +14,10 @@
 #include "honeybadger/communication/network/Logger.hh"
 #include "honeybadger/communication/network/sctp/ConnectedSocket.hh"
 #include <boost/asio.hpp>
-#include <boost/asio/experimental/coro.hpp>
-
+#include <boost/asio/awaitable.hpp>
+#include <boost/asio/co_spawn.hpp>
+#include <boost/asio/detached.hpp>
+#include <boost/asio/use_awaitable.hpp>
 namespace
 {
 template<typename ProtocolEndpoint>
@@ -54,6 +56,7 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
 
 namespace honeybadger::communication::network
 {
+
 SctpSocket::~SctpSocket()
 {
     closeConnectionOnBothSides();
@@ -61,7 +64,7 @@ SctpSocket::~SctpSocket()
 
 SctpSocket::SctpSocket() :
     ioContext_(std::make_shared<boost::asio::io_context>()), acceptor_(*ioContext_),
-    socket_(std::make_shared<Protocol::socket>(*ioContext_))
+    socket_(std::make_shared<Protocol::socket>(*ioContext_)), work_guard_(boost::asio::make_work_guard(*ioContext_))
 {
     selectSctpProtocolForAcceptor();
 }
@@ -97,7 +100,7 @@ try
     DEBUG_LOG("SCTP socket listen with max connections: {}", maxListenConnections);
     acceptor_.listen(maxListenConnections);
     INFO_LOG("SCTP socket listen");
-    ioContext_->run();
+    INFO_LOG("io context run");
     return true;
 }
 catch(const boost::system::system_error &error)
@@ -121,6 +124,7 @@ DISABLE_SWITCH_DEFAULT_WARNING_DUE_TO_BOOST_COROUTINES
 common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> SctpSocket::accept()
 try
 {
+    INFO_LOG("SCTP socket accept");
     auto clientSocket = co_await acceptor_.async_accept(boost::asio::use_awaitable);
     std::unique_ptr<interface::ConnectedSocket> connectedSocket = std::make_unique<ConnectedSocket>(
         createConnectedSocketFromThis(std::make_shared<Protocol::socket>(std::move(clientSocket))));
@@ -140,6 +144,39 @@ catch(...)
 {
     WARN_LOG("SCTP socket accept failed: unknown error");
     co_return nullptr;
+}
+
+void SctpSocket::startloop()
+{
+    boost::asio::co_spawn(*ioContext_, acceptloop(), boost::asio::detached);
+    ioContext_->run();
+}
+
+common::coroutines::Task<void> SctpSocket::acceptloop()
+{
+    std::vector<std::shared_ptr<interface::ConnectedSocket>> connectedSockets;
+    while(true)
+    {
+        std::shared_ptr<interface::ConnectedSocket> connectedSocket = co_await accept();
+        INFO_LOG("SCTP accepted");
+        connectedSockets.push_back(connectedSocket);
+        co_await boost::asio::post(ioContext_->get_executor(), boost::asio::use_awaitable);
+        boost::asio::co_spawn(ioContext_->get_executor(), connectedSocket->run(), boost::asio::detached);
+        INFO_LOG("connected socket run");
+    }
+}
+common::coroutines::Task<void> SctpSocket::send(const common::types::Payload &payload)
+{
+    co_await boost::asio::async_write(*socket_,boost::asio::buffer(payload.value().data(), payload.value().size()),
+                             boost::asio::use_awaitable);
+    co_return;
+}
+
+common::coroutines::Task<common::types::Payload> SctpSocket::receive()
+{
+    std::array<std::uint8_t, 12> buffer_;
+     co_await boost::asio::async_read(*socket_, boost::asio::buffer(buffer_), boost::asio::as_tuple(boost::asio::use_awaitable));
+    co_return common::types::Payload(buffer_.begin(), buffer_.end());
 }
 
 RESTORE_WARNINGS

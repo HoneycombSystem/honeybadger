@@ -11,7 +11,7 @@ class SctpSocket;
 class SctpServerSocket : public interface::ServerSocket
 {
   public:
-    SctpServerSocket(const common::types::Endpoint &);
+    SctpServerSocket();
     ~SctpServerSocket();
     bool bind(const common::types::Endpoint &) override;
     bool listen() override;
@@ -21,7 +21,6 @@ class SctpServerSocket : public interface::ServerSocket
 
   private:
     void closeSctpSocketAndResetPointer();
-    common::types::Endpoint endpoint_;
     std::unique_ptr<SctpSocket> sctpSocket_;
 };
 } // namespace honeybadger::communication::network

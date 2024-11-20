@@ -14,9 +14,8 @@ ApplicationProtocolServerFactory::ApplicationProtocolServerFactory(const common:
 std::unique_ptr<interface::Server> ApplicationProtocolServerFactory::create()
 {
     std::unique_ptr<network::interface::ServerSocket> serverSocket =
-        std::make_unique<network::SctpServerSocket>(endpoint_);
-    std::unique_ptr<interface::Server> server = std::make_unique<ApplicationProtocolServer>(std::move(serverSocket));
-    // return std::make_unique<ApplicationProtocolServer>(std::move(server));
+        std::make_unique<network::SctpServerSocket>();
+    std::unique_ptr<interface::Server> server = std::make_unique<ApplicationProtocolServer>(std::move(serverSocket), endpoint_);
     return server;
 }
 } // namespace honeybadger::communication::server

@@ -9,5 +9,6 @@ class ConnectedSocket : public CloseableSocket, public SenderSocket, public Rece
 {
   public:
     virtual ~ConnectedSocket() = default;
+    virtual common::coroutines::Task<void> run() = 0;
 };
 } // namespace honeybadger::communication::network::interface

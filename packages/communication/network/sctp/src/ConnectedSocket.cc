@@ -1,18 +1,16 @@
 #include "honeybadger/communication/network/sctp/ConnectedSocket.hh"
 #include "honeybadger/common/types/network/Payload.hh"
-#include "honeybadger/communication/network/sctp/SctpSocket.hh"
 #include "honeybadger/communication/network/Logger.hh"
+#include "honeybadger/communication/network/sctp/SctpSocket.hh"
 
 namespace honeybadger::communication::network
 {
 ConnectedSocket::ConnectedSocket(std::shared_ptr<SctpSocket> sctpSocket) : sctpSocket_(std::move(sctpSocket))
 {
-    INFO_LOG("ConnectedSocket::ConnectedSocket()");
 }
 
 ConnectedSocket::~ConnectedSocket()
 {
-    INFO_LOG("ConnectedSocket::~ConnectedSocket()");
     closeSctpSocketAndResetPointer();
 }
 
@@ -23,7 +21,11 @@ void ConnectedSocket::close()
 
 bool ConnectedSocket::isClosed() const
 {
-    return sctpSocket_ == nullptr or sctpSocket_->isClosed();
+    if(sctpSocket_)
+    {
+        return sctpSocket_->isClosed();
+    }
+    return true;
 }
 
 DISABLE_SWITCH_DEFAULT_WARNING_DUE_TO_BOOST_COROUTINES
@@ -41,24 +43,35 @@ common::coroutines::Task<common::types::Payload> ConnectedSocket::receive()
 
 common::coroutines::Task<void> ConnectedSocket::run()
 {
-    while(true)
+    try
     {
-        //co_await sctpSocket_->sync();
+    while(not isClosed())
+    {
         auto recv = co_await receive();
-        auto recvValue = recv.value();
-        std::reverse(recvValue.begin(), recvValue.end());
-        recv = common::types::Payload(recvValue);
-        co_await send(recv);
+        // co_await send(recv);
     }
+    }
+    catch(const boost::system::system_error &e)
+    {
+        if(e.code() == boost::asio::error::eof || e.code() == boost::asio::error::connection_reset)
+        {
+            INFO_LOG( "Clien disconnected gracefully.\n");
+        }
+        else
+        {
+            INFO_LOG( "Error with client {}" ,e.what());
+        }
+    }
+    closeSctpSocketAndResetPointer();
     co_return;
 }
 RESTORE_WARNINGS
 
 void ConnectedSocket::closeSctpSocketAndResetPointer()
 {
+    INFO_LOG("Closing SCTP socket");
     if(sctpSocket_ and not sctpSocket_->isClosed())
     {
-        sctpSocket_->close();
         sctpSocket_.reset();
     }
 }

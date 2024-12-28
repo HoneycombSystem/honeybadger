@@ -34,15 +34,8 @@ class SctpSocket : std::enable_shared_from_this<SctpSocket>
 
 
     common::coroutines::Task<void> acceptloop();
-void startloop();
-  //getExecutor
-DISABLE_SWITCH_DEFAULT_WARNING_DUE_TO_BOOST_COROUTINES
+    void startloop();
 
-  common::coroutines::Task<void> sync()
-  {
-    co_await boost::asio::post(ioContext_->get_executor(), boost::asio::use_awaitable);
-  }
-RESTORE_WARNINGS
   private:
     using Protocol = boost::asio::generic::stream_protocol;
 

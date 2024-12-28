@@ -4,6 +4,7 @@
 
 namespace honeybadger::communication::network
 {
+    
 SctpServerSocket::SctpServerSocket() :
     sctpSocket_(std::make_unique<SctpSocket>())
 {
@@ -42,7 +43,7 @@ void SctpServerSocket::close()
 
 bool SctpServerSocket::isClosed() const
 {
-    return sctpSocket_ == nullptr or sctpSocket_->isClosed();
+    return sctpSocket_ == nullptr and sctpSocket_->isClosed();
 }
 
 void SctpServerSocket::closeSctpSocketAndResetPointer()

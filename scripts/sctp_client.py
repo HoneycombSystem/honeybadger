@@ -13,7 +13,7 @@ server_port = 2137
 
 
 sockets = []
-for i in range(5):
+for i in range(500):
     sock = sctp.sctpsocket_tcp(socket.AF_INET)
     sock.connect((server_ip, server_port))
     sock.settimeout(10)

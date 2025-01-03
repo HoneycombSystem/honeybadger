@@ -4,9 +4,8 @@
 
 namespace honeybadger::communication::network
 {
-    
-SctpServerSocket::SctpServerSocket() :
-    sctpSocket_(std::make_unique<SctpSocket>())
+
+SctpServerSocket::SctpServerSocket() : sctpSocket_(std::make_unique<SctpSocket>())
 {
 }
 
@@ -23,7 +22,6 @@ bool SctpServerSocket::bind(const common::types::Endpoint &endpoint)
 bool SctpServerSocket::listen()
 {
     sctpSocket_->listen();
-    sctpSocket_->startloop();
     return true;
 }
 

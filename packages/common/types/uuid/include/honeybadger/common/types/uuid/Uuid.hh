@@ -22,5 +22,11 @@ class Uuid
     {
         return lhs.uuid_ != rhs.uuid_;
     }
+
+    // ToDo(miekicki): think about string_view
+    std::string value() const
+    {
+        return uuid_;
+    }
 };
 } // namespace honeybadger::common::types

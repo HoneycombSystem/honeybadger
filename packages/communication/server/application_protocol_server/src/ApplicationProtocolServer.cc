@@ -3,10 +3,11 @@
 
 namespace honeybadger::communication::server
 {
-ApplicationProtocolServer::ApplicationProtocolServer(
-    std::unique_ptr<network::interface::ServerSocket> asyncServerSocket,
-    const common::types::Endpoint &endpoint) :
-    asyncServerSocket_(std::move(asyncServerSocket))
+ApplicationProtocolServer::ApplicationProtocolServer(std::unique_ptr<network::interface::ServerSocket>
+                                                         asyncServerSocket,
+                                                     const common::types::Endpoint &endpoint) :
+    asyncServerSocket_(std::move(asyncServerSocket)),
+    sctpEventManager_()
 {
     asyncServerSocket_->bind(endpoint);
 }

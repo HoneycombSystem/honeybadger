@@ -24,4 +24,4 @@ enum class SctpPeerAddressChangeEventType : std::uint32_t
     AddressPotentiallyFailed,
     MaxPeerAddressChangeEvent
 };
-}
+} // namespace honeybadger::communication::network

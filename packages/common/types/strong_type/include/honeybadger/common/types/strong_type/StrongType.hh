@@ -20,9 +20,24 @@ class StrongType
 
     friend auto operator<=>(const StrongType &lhs, const StrongType &rhs) = default;
 
-    T value() const
+    T &value()
     {
         return value_;
+    }
+
+    const T &value() const
+    {
+        return value_;
+    }
+
+    T *operator->()
+    {
+        return &value_;
+    }
+
+    const T *operator->() const
+    {
+        return &value_;
     }
 
   private:

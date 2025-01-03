@@ -45,26 +45,27 @@ common::coroutines::Task<void> ConnectedSocket::run()
 {
     try
     {
-    while(not isClosed())
-    {
-        auto recv = co_await receive();
-        // co_await send(recv);
-    }
+        while(not isClosed())
+        {
+            auto recv = co_await receive();
+            // co_await send(recv);
+        }
     }
     catch(const boost::system::system_error &e)
     {
         if(e.code() == boost::asio::error::eof || e.code() == boost::asio::error::connection_reset)
         {
-            INFO_LOG( "Clien disconnected gracefully.\n");
+            INFO_LOG("Clien disconnected gracefully.\n");
         }
         else
         {
-            INFO_LOG( "Error with client {}" ,e.what());
+            INFO_LOG("Error with client {}", e.what());
         }
     }
     closeSctpSocketAndResetPointer();
     co_return;
 }
+
 RESTORE_WARNINGS
 
 void ConnectedSocket::closeSctpSocketAndResetPointer()

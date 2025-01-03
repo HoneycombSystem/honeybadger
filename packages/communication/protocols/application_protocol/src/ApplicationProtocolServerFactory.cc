@@ -1,7 +1,7 @@
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolServerFactory.hh"
 #include "honeybadger/communication/protocols/application_protocol/ApplicationProtocolServer.hh"
-#include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolServerFactory.hh"
 #include "honeybadger/communication/protocols/Logger.hh"
+#include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolServerFactory.hh"
 
 namespace honeybadger::communication::protocols
 {

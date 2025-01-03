@@ -20,6 +20,8 @@
 #include <boost/asio/use_awaitable.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 
+namespace honeybadger::communication::network
+{
 namespace
 {
 template<typename ProtocolEndpoint>
@@ -55,47 +57,32 @@ ProtocolEndpoint buildAsioEndpoint(const honeybadger::common::types::Endpoint &e
     }
 }
 
-void configure_sctp_socket(auto &socket)
+void setSctpHeartBeat(auto &socket, std::uint32_t interval, std::uint32_t flags = SPP_HB_ENABLE,
+                      std::uint16_t pathMaxRxt = 1)
 {
-    boost::asio::socket_base::keep_alive option(true);
-    socket.set_option(option);
+    sctp_paddrparams heartBeatParams;
+    std::memset(&heartBeatParams, 0, sizeof(heartBeatParams));
 
-    // Struktura konfiguracji SCTP Heartbeat
-    struct sctp_paddrparams heartbeat_params;
-    std::memset(&heartbeat_params, 0, sizeof(heartbeat_params));
-
-    // Pobranie aktualnych parametrów SCTP
-    socklen_t opt_len = sizeof(heartbeat_params);
-    if(getsockopt(socket.native_handle(), IPPROTO_SCTP, SCTP_PEER_ADDR_PARAMS, &heartbeat_params, &opt_len) < 0)
+    socklen_t optlen = sizeof(heartBeatParams);
+    const auto nativeHandle = socket.native_handle();
+    if(getsockopt(nativeHandle, IPPROTO_SCTP, SCTP_PEER_ADDR_PARAMS, &heartBeatParams, &optlen) < 0)
     {
         throw std::runtime_error("Failed to get SCTP_PEER_ADDR_PARAMS");
     }
 
-    // Ustawienie interwału Heartbeat (np. 10 sekund)
-    heartbeat_params.spp_hbinterval = 1000; // W milisekundach
-    heartbeat_params.spp_flags |= SPP_HB_ENABLE; // Włącz Heartbeat
-    heartbeat_params.spp_pathmaxrxt = 1; // Maksymalna liczba retransmisji
+    heartBeatParams.spp_hbinterval = interval;
+    heartBeatParams.spp_flags = flags;
+    heartBeatParams.spp_pathmaxrxt = pathMaxRxt;
 
-    // Zastosowanie parametrów SCTP
-    if(setsockopt(socket.native_handle(),
-                  IPPROTO_SCTP,
-                  SCTP_PEER_ADDR_PARAMS,
-                  &heartbeat_params,
-                  sizeof(heartbeat_params)) < 0)
+    if(setsockopt(nativeHandle, IPPROTO_SCTP, SCTP_PEER_ADDR_PARAMS, &heartBeatParams, sizeof(heartBeatParams)) < 0)
     {
         throw std::runtime_error("Failed to set SCTP_PEER_ADDR_PARAMS");
     }
+}
 
-    struct sctp_rtoinfo rtoinfo;
-    std::memset(&rtoinfo, 0, sizeof(rtoinfo));
-    rtoinfo.srto_max = 2000;
-    if(setsockopt(socket.native_handle(), IPPROTO_SCTP, SCTP_RTOINFO, &rtoinfo, sizeof(rtoinfo)) < 0)
-    {
-        throw std::runtime_error("Failed to set SCTP_RTOINFO");
-    }
-    INFO_LOG("set heartbeat");
-
-    struct sctp_event_subscribe events;
+void setSctpEventNotify(auto &socket)
+{
+    sctp_event_subscribe events;
     std::memset(&events, 0, sizeof(events));
     events.sctp_association_event = 1;
     events.sctp_shutdown_event = 1;
@@ -107,7 +94,15 @@ void configure_sctp_socket(auto &socket)
     events.sctp_authentication_event = 1;
     events.sctp_sender_dry_event = 1;
     events.sctp_stream_reset_event = 1;
-    setsockopt(socket.native_handle(), IPPROTO_SCTP, SCTP_EVENTS, &events, sizeof(events));
+    events.sctp_data_io_event = 1;
+    events.sctp_assoc_reset_event = 1;
+    events.sctp_stream_change_event = 1;
+    events.sctp_send_failure_event_event = 1;
+    const auto nativeHandle = socket.native_handle();
+    if(setsockopt(nativeHandle, IPPROTO_SCTP, SCTP_EVENTS, &events, sizeof(events)) < 0)
+    {
+        throw std::runtime_error("Failed to set SCTP_EVENTS");
+    }
 }
 
 void handle_assoc_change(sctp_assoc_change *sac)
@@ -125,6 +120,7 @@ void handle_assoc_change(sctp_assoc_change *sac)
             break;
         case SCTP_SHUTDOWN_COMP:
             std::cout << "SCTP association shutdown complete" << std::endl;
+            // eventManager_.notify(SctpAssociationEventType::ShutdownComplete);
             break;
         case SCTP_CANT_STR_ASSOC:
             std::cout << "SCTP association can't start" << std::endl;
@@ -163,37 +159,26 @@ void handle_peer_addr_change(sctp_paddr_change *spc)
     }
 }
 
-void handle_read_notification(const boost::system::error_code &error, std::size_t ,
-                              std::vector<unsigned char> &buffer)
-{
-    if(!error)
-    {
-        auto *sn = reinterpret_cast<sctp_notification *>(buffer.data());
-        switch(sn->sn_header.sn_type)
-        {
-            case SCTP_ASSOC_CHANGE:
-                handle_assoc_change(&sn->sn_assoc_change);
-                break;
-            case SCTP_PEER_ADDR_CHANGE:
-                handle_peer_addr_change(&sn->sn_paddr_change);
-                break;
-            // Handle other notification types as needed
-            default:
-                std::cout << "Received unknown notification type: " << sn->sn_header.sn_type << std::endl;
-                break;
-        }
-
-        // Continue reading notifications
-    }
-    else
-    {
-        std::cerr << "Notification read error: " << error.message() << std::endl;
-    }
-}
 } // namespace
 
-namespace honeybadger::communication::network
+void SctpSocket::readSctpNotifications(const common::types::Payload &buffer)
 {
+    auto *sctpNotification =
+        const_cast<sctp_notification *>(reinterpret_cast<const sctp_notification *>(buffer.value().data()));
+
+    switch(sctpNotification->sn_header.sn_type)
+    {
+        case SCTP_ASSOC_CHANGE:
+            handle_assoc_change(&sctpNotification->sn_assoc_change);
+            break;
+        case SCTP_PEER_ADDR_CHANGE:
+            handle_peer_addr_change(&sctpNotification->sn_paddr_change);
+            break;
+        default:
+            std::cout << "Received unknown notification type: " << sctpNotification->sn_header.sn_type << std::endl;
+            break;
+    }
+}
 
 SctpSocket::~SctpSocket()
 {
@@ -202,7 +187,7 @@ SctpSocket::~SctpSocket()
 
 SctpSocket::SctpSocket() :
     ioContext_(std::make_shared<boost::asio::io_context>()), acceptor_(*ioContext_),
-    socket_(std::make_shared<Protocol::socket>(*ioContext_)), work_guard_(boost::asio::make_work_guard(*ioContext_))
+    socket_(std::make_shared<Protocol::socket>(*ioContext_))
 {
     selectSctpProtocolForAcceptor();
 }
@@ -266,7 +251,9 @@ try
     boost::asio::socket_base::keep_alive option(true);
     clientSocket.set_option(option);
 
-    configure_sctp_socket(clientSocket);
+    setSctpHeartBeat(clientSocket, 1000);
+    setSctpEventNotify(clientSocket);
+
     std::unique_ptr<interface::ConnectedSocket> connectedSocket = std::make_unique<ConnectedSocket>(
         createConnectedSocketFromThis(std::make_shared<Protocol::socket>(std::move(clientSocket))));
     co_return std::move(connectedSocket);
@@ -287,30 +274,32 @@ catch(...)
     co_return nullptr;
 }
 
-void SctpSocket::startloop()
-{
-    boost::asio::co_spawn(*ioContext_, acceptloop(), boost::asio::detached);
-    ioContext_->run();
-    INFO_LOG("io context run");
-}
+// void SctpSocket::startloop()
+// {
+//     boost::asio::co_spawn(*ioContext_, acceptloop(), boost::asio::detached);
+//     ioContext_->run();
+//     INFO_LOG("io context run");
+// }
 
-common::coroutines::Task<void> SctpSocket::acceptloop()
-{
-    std::vector<std::shared_ptr<interface::ConnectedSocket>> connectedSockets;
-    while(true)
-    {
-        std::shared_ptr<interface::ConnectedSocket> connectedSocket = co_await accept();
-        INFO_LOG("SCTP accepted");
-        connectedSockets.push_back(connectedSocket);
-        co_await boost::asio::post(ioContext_->get_executor(), boost::asio::use_awaitable);
-        boost::asio::co_spawn(ioContext_->get_executor(), connectedSocket->run(), boost::asio::detached);
-        INFO_LOG("connected socket run");
-    }
-}
+// common::coroutines::Task<void> SctpSocket::acceptloop()
+// {
+//     std::vector<std::shared_ptr<interface::ConnectedSocket>> connectedSockets;
+//     while(true)
+//     {
+//         std::shared_ptr<interface::ConnectedSocket> connectedSocket = co_await accept();
+//         INFO_LOG("SCTP accepted");
+//         connectedSockets.push_back(connectedSocket);
+//         co_await boost::asio::post(ioContext_->get_executor(), boost::asio::use_awaitable);
+//         boost::asio::co_spawn(ioContext_->get_executor(), connectedSocket->run(), boost::asio::detached);
+//         INFO_LOG("connected socket run");
+//     }
+// }
+
 common::coroutines::Task<void> SctpSocket::send(const common::types::Payload &payload)
 {
-    co_await boost::asio::async_write(*socket_,boost::asio::buffer(payload.value().data(), payload.value().size()),
-                             boost::asio::use_awaitable);
+    co_await boost::asio::async_write(*socket_,
+                                      boost::asio::buffer(payload.value().data(), payload.value().size()),
+                                      boost::asio::use_awaitable);
     co_return;
 }
 
@@ -319,26 +308,30 @@ common::coroutines::Task<common::types::Payload> SctpSocket::receive()
     while(true)
     {
         co_await socket_->async_wait(Protocol::socket::wait_read, boost::asio::use_awaitable);
-        std::vector<std::uint8_t> buffer_(socket_->available());
+        common::types::Payload buffer_(socket_->available());
         try
         {
-        auto [ec, readed] = co_await boost::asio::async_read(*socket_, boost::asio::buffer(buffer_), boost::asio::as_tuple(boost::asio::use_awaitable));
-        if(ec)
-        {
-            WARN_LOG("SCTP receive : {}:{}", ec.value(), ec.message());
-            throw std::runtime_error(ec.message());
-            co_return common::types::Payload();
+            auto [ec, readed] = co_await boost::asio::async_read(*socket_,
+                                                                 boost::asio::buffer(buffer_.value()),
+                                                                 boost::asio::as_tuple(boost::asio::use_awaitable));
+            if(ec)
+            {
+                WARN_LOG("SCTP receive : {}:{}", ec.value(), ec.message());
+                throw std::runtime_error(ec.message());
+                co_return common::types::Payload();
+            }
+            const std::size_t sctpNotificationStructureSize = sizeof(sctp_notification);
+            if(buffer_->size() != 0 and buffer_->size() == sctpNotificationStructureSize)
+            {
+                readSctpNotifications(buffer_);
+            }
         }
-        if(buffer_.size()!=0)
-        handle_read_notification(ec, readed, buffer_);
-        }
-        catch(const std::exception& e)
+        catch(const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
 
-
-        co_return common::types::Payload(buffer_);
+        co_return buffer_;
     }
 }
 
@@ -363,7 +356,10 @@ bool SctpSocket::closeConnectionOnBothSides()
 {
     try
     {
-        socket_->shutdown(Protocol::socket::shutdown_both);
+        if(socket_ and socket_->is_open())
+        {
+            socket_->shutdown(Protocol::socket::shutdown_both);
+        }
         acceptor_.close();
         socket_.reset();
         INFO_LOG("SCTP closed");

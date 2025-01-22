@@ -21,15 +21,12 @@ set_target_properties(
 
 add_logger(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
-target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::io_context)
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::coroutines)
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::network)
-target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::server)
-target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::protocols)
 
-find_package(Boost 1.86 QUIET REQUIRED COMPONENTS system)
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::system)
-
+set(REQUIRED_COMPONENTS system)
+set(LIBRARIES Boost::system)
+add_boost(${PROJECT_NAME} REQUIRED_COMPONENTS ${REQUIRED_COMPONENTS} LIBRARIES ${LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE $<$<BOOL:${WIN32}>:ws2_32>)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)

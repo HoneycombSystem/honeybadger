@@ -2,7 +2,7 @@
 
 namespace honeybadger::communication::protocols
 {
-ApplicationProtocol::ApplicationProtocol(std::unique_ptr<interface::ProtocolServer> protocolServer) :
+ApplicationProtocol::ApplicationProtocol(std::unique_ptr<server::interface::Server> protocolServer) :
     protocolServer_(std::move(protocolServer))
 {
 }

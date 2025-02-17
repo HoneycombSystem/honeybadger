@@ -1,6 +1,7 @@
 #include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolServerFactory.hh"
 #include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/network/sctp/SctpServerSocket.hh"
+#include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolClientManager.hh"
 #include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolServer.hh"
 #include <memory>
 
@@ -14,8 +15,9 @@ ApplicationProtocolServerFactory::ApplicationProtocolServerFactory(const common:
 std::unique_ptr<interface::Server> ApplicationProtocolServerFactory::create()
 {
     std::unique_ptr<network::interface::ServerSocket> serverSocket = std::make_unique<network::SctpServerSocket>();
+    std::unique_ptr<interface::ClientManager> clientManager = std::make_unique<ApplicationProtocolClientManager>();
     std::unique_ptr<interface::Server> server =
-        std::make_unique<ApplicationProtocolServer>(std::move(serverSocket), endpoint_);
+        std::make_unique<ApplicationProtocolServer>(std::move(serverSocket), endpoint_, std::move(clientManager));
     return server;
 }
 } // namespace honeybadger::communication::server

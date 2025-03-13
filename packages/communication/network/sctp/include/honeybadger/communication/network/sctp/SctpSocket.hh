@@ -1,4 +1,5 @@
 #pragma once
+#include "honeybadger/common/io_context/io_context_manager/IOContextManager.hh"
 #include "honeybadger/communication/network/socket/interface/CloseableSocket.hh"
 #include "honeybadger/communication/network/socket/interface/ConnectedSocket.hh"
 #include "honeybadger/communication/network/socket/interface/ReceiverSocket.hh"
@@ -21,7 +22,7 @@ class SctpSocket : std::enable_shared_from_this<SctpSocket>
     SctpSocket &operator=(const SctpSocket &) = delete;
     SctpSocket &operator=(SctpSocket &&) = delete;
 
-    SctpSocket();
+    SctpSocket(std::shared_ptr<common::io_context::IOContextManager>);
     ~SctpSocket();
 
     bool bind(const common::types::Endpoint &endpoint);
@@ -40,7 +41,7 @@ class SctpSocket : std::enable_shared_from_this<SctpSocket>
     std::shared_ptr<SctpSocket> createConnectedSocketFromThis(std::shared_ptr<Protocol::socket>);
     void readSctpNotifications(const common::types::Payload &);
 
-    std::shared_ptr<boost::asio::io_context> ioContext_;
+    std::shared_ptr<common::io_context::IOContextManager> iOContextManager_;
     boost::asio::basic_socket_acceptor<Protocol> acceptor_;
     std::shared_ptr<Protocol::socket> socket_;
 };

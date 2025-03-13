@@ -11,9 +11,9 @@ class IOContext
     virtual void stop() = 0;
 
     template<typename T>
-    T* getNativeContext()
+    T& getNativeContext()
     {
-        return dynamic_cast<T*>(getNativeContextImpl());
+        return *static_cast<T*>(getNativeContextImpl());
     }
 
   protected:

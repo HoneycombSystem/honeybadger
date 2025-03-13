@@ -1,4 +1,5 @@
 #include "honeybadger/common/io_context/io_context/AsioIOContext.hh"
+#include "honeybadger/common/io_context/Logger.hh"
 #include <boost/asio/co_spawn.hpp>
 #include <boost/asio/detached.hpp>
 #include <boost/asio/io_context.hpp>
@@ -27,6 +28,12 @@ AsioIOContext::~AsioIOContext()
 
 void AsioIOContext::run()
 {
+    INFO_LOG("Starting io context");
+    if(!ioContext_)
+    {
+        ERROR_LOG("ioContext_ is null!");
+        return;
+    }
     ioContext_->run();
 }
 
@@ -42,6 +49,6 @@ void AsioIOContext::spawnTask(std::function<common::coroutines::Task<void>()> ta
 
 void *AsioIOContext::getNativeContextImpl()
 {
-    return &ioContext_;
+    return ioContext_.get();
 }
 } // namespace honeybadger::common::io_context

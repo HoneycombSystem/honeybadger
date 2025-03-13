@@ -1,11 +1,13 @@
 #include "honeybadger/communication/network/sctp/SctpServerSocket.hh"
 #include "honeybadger/common/types/network/Endpoint.hh"
+#include "honeybadger/communication/network/Logger.hh"
 #include "honeybadger/communication/network/sctp/SctpSocket.hh"
 
 namespace honeybadger::communication::network
 {
 
-SctpServerSocket::SctpServerSocket() : sctpSocket_(std::make_unique<SctpSocket>())
+SctpServerSocket::SctpServerSocket(std::shared_ptr<common::io_context::IOContextManager> iOContextManager) :
+    sctpSocket_(std::make_unique<SctpSocket>(std::move(iOContextManager)))
 {
 }
 
@@ -29,6 +31,10 @@ DISABLE_SWITCH_DEFAULT_WARNING_DUE_TO_BOOST_COROUTINES
 
 common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> SctpServerSocket::accept()
 {
+    if(not sctpSocket_)
+    {
+        co_return nullptr;
+    }
     co_return co_await sctpSocket_->accept();
 }
 

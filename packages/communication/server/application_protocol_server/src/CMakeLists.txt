@@ -21,6 +21,7 @@ set_target_properties(
 
 add_logger(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::types)
+target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::common::io_context)
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::network)
 target_link_libraries(${PROJECT_NAME} PUBLIC honeybadger::communication::server)
 

@@ -10,6 +10,7 @@
 #else
     #warning SCTP implementation for this system is missing
 #endif
+#include "honeybadger/common/io_context/io_context/interface/IOContext.hh"
 #include "honeybadger/common/types/network/Endpoint.hh"
 #include "honeybadger/communication/network/Logger.hh"
 #include "honeybadger/communication/network/sctp/ConnectedSocket.hh"
@@ -185,9 +186,11 @@ SctpSocket::~SctpSocket()
     closeConnectionOnBothSides();
 }
 
-SctpSocket::SctpSocket() :
-    ioContext_(std::make_shared<boost::asio::io_context>()), acceptor_(*ioContext_),
-    socket_(std::make_shared<Protocol::socket>(*ioContext_))
+SctpSocket::SctpSocket(std::shared_ptr<common::io_context::IOContextManager> iOContextManager) :
+    iOContextManager_(std::move(iOContextManager)),
+    acceptor_(iOContextManager_->getIOContext()->getNativeContext<boost::asio::io_context>()),
+    socket_(std::make_shared<Protocol::socket>(
+        iOContextManager_->getIOContext()->getNativeContext<boost::asio::io_context>()))
 {
     selectSctpProtocolForAcceptor();
 }
@@ -246,7 +249,6 @@ DISABLE_SWITCH_DEFAULT_WARNING_DUE_TO_BOOST_COROUTINES
 common::coroutines::Task<std::unique_ptr<interface::ConnectedSocket>> SctpSocket::accept()
 try
 {
-    INFO_LOG("SCTP socket accept");
     auto clientSocket = co_await acceptor_.async_accept(boost::asio::use_awaitable);
     boost::asio::socket_base::keep_alive option(true);
     clientSocket.set_option(option);
@@ -384,7 +386,7 @@ bool SctpSocket::closeConnectionOnBothSides()
 
 std::shared_ptr<SctpSocket> SctpSocket::createConnectedSocketFromThis(std::shared_ptr<Protocol::socket> socket)
 {
-    auto connectedSocket = std::make_shared<SctpSocket>();
+    auto connectedSocket = std::make_shared<SctpSocket>(iOContextManager_);
     connectedSocket->socket_ = std::move(socket);
     return connectedSocket;
 }

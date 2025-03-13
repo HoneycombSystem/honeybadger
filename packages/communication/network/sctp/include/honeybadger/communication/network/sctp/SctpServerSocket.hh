@@ -1,8 +1,10 @@
 #pragma once
+#include "honeybadger/common/io_context/io_context_manager/IOContextManager.hh"
 #include "honeybadger/communication/network/socket/interface/ConnectedSocket.hh"
 #include "honeybadger/communication/network/socket/interface/ServerSocket.hh"
 #include <honeybadger/common/coroutines/task/Task.hh>
 #include <honeybadger/common/types/network/Endpoint.hh>
+#include <memory>
 
 namespace honeybadger::communication::network
 {
@@ -11,7 +13,7 @@ class SctpSocket;
 class SctpServerSocket : public interface::ServerSocket
 {
   public:
-    SctpServerSocket();
+    SctpServerSocket(std::shared_ptr<common::io_context::IOContextManager>);
     ~SctpServerSocket();
     bool bind(const common::types::Endpoint &) override;
     bool listen() override;

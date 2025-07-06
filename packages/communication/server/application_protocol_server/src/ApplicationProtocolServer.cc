@@ -5,6 +5,7 @@
 #include <boost/asio/io_context.hpp>
 #include <honeybadger/common/io_context/io_context/AsioIoContext.hh>
 #include <honeybadger/common/io_context/io_context_manager/IOContextManager.hh>
+#include "honeybadger/communication/server/application_protocol_server/ApplicationProtocolClient.hh"
 
 namespace honeybadger::communication::server
 {
@@ -37,10 +38,8 @@ common::coroutines::Task<void> ApplicationProtocolServer::acceptLoop()
             co_return;
         }
         auto connectedSocket = co_await asyncServerSocket_->accept();
-        if(connectedSocket)
-        {
-            INFO_LOG("Accepted connection from ");
-        }
+        std::unique_ptr<interface::Client> client = std::make_unique<ApplicationProtocolClient>(std::move(connectedSocket));
+        clientManager_->addClient(std::move(client));
     }
     co_return;
 }
